@@ -25,22 +25,7 @@ function HomePage() {
 
     return (
         <div>
-            {/* Header */}
             <header>
-                <nav>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li>
-                            <a href="#">Sports</a>
-                            <ul>
-                                <li><a href="#">Football</a></li>
-                                <li><a href="#">Basketball</a></li>
-                                <li><a href="#">Tennis</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">About</a></li>
-                    </ul>
-                </nav>
                 <nav>
                     <ul>
                         <li><a href="#">Bet Slip ({betSlip.length})</a></li>

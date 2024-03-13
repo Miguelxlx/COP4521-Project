@@ -2,7 +2,13 @@ import React from 'react';
 import App from './App';
 import ReactDOM from 'react-dom';
 import HomeScreen from './screens/HomeScreen';
-import { Route } from 'react-router-dom';
+import { 
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider } from 'react-router-dom';
+import reportWebVitals from './reportWebVitals';
+
 
 const router = createBrowserRouter(
     createRoutesFromElements(
