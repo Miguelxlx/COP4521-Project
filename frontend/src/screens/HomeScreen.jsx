@@ -18,9 +18,9 @@ function HomePage() {
 
     // Sample data for games
     const sampleGames = [
-        { id: 1, name: "Football", startTime: "10:00 AM" },
-        { id: 2, name: "Basketball", startTime: "11:00 AM" },
-        { id: 3, name: "Tennis", startTime: "12:00 PM" }
+        { id: 1, name: "Heat vs Nuggets", startTime: "7:00 AM" },
+        { id: 2, name: "Wizards vs Pistons", startTime: "3:00 AM" },
+        { id: 3, name: "Lakers vs Warriors", startTime: "10:00 PM" }
     ];
 
     return (
