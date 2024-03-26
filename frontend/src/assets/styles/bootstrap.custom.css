@@ -12118,3 +12118,30 @@ fieldset:disabled .btn {
     display: none !important;
   }
 }
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.gamesContainer {
+  flex: 3; /* Takes the majority of the space */
+  padding: 20px;
+}
+
+.betSlipContainer {
+  flex: 1; /* Takes less space, adjust the ratio as needed */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes the button to the bottom */
+}
+
+.placeBetButton {
+  align-self: center; /* Centers the button in the bet slip container */
+  padding: 10px 20px;
+  margin-top: 20px; /* Adds some space above the button */
+  cursor: pointer;
+}
+.customNavbar {
+  background-color: #007bff; /* Example: Blue color */
+}

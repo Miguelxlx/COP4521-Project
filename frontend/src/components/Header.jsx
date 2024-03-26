@@ -27,7 +27,7 @@ export const Header = () => {
 
   return (
     <header>
-        <Navbar bg="dark" variant="--bs-blue" expand="md" collapseOnSelect >
+        <Navbar bg="dark" expand="md" collapseOnSelect className='customNavbar'>
             <Container>
                 <LinkContainer to='/'>
                 <Navbar.Brand>
