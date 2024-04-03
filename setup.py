@@ -1,92 +1,66 @@
-import sqlite3
+from pymongo import MongoClient
+import datetime
 
 def setup():
-    conn = sqlite3.connect('bettingData.db')
-    print('Opened database successfully')
+    # Connect to MongoDB
+    client = MongoClient('localhost', 27017)  # Adjust the connection string as necessary
+    db = client['bettingData']
+    print('Connected to MongoDB successfully')
 
-    
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS Account(
-            AccountID INTEGER PRIMARY KEY AUTOINCREMENT,
-            Username VARCHAR(20),
-            Status VARCHAR(10),
-            Email VARCHAR(30),
-            Password VARCHAR(20),
-            Balance FLOAT
-        );
-    ''')
-    print('Table Account created successfully')
+    # Accounts Collection
+    account = {
+        "Username": "admin",
+        "Status": "Active",
+        "Email": "admin@example.com",
+        "Password": "securepassword",
+        "Balance": 1000.0,
+        "Transactions": []  # Placeholder for transaction documents
+    }
+    account_id = db.Account.insert_one(account).inserted_id
+    print('Collection Account initialized successfully')
 
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS 'Transaction'(
-            TransactionID INTEGER PRIMARY KEY AUTOINCREMENT,
-            AccountID INTEGER,
-            Date DATETIME,
-            Amount FLOAT,
-                
-            FOREIGN KEY (AccountID) REFERENCES Account (AccountID)
-        );
-    ''')
-    print('Table Transaction created successfully')
+    # Transactions Collection
+    transaction = {
+        "AccountID": account_id,
+        "Date": datetime.datetime.utcnow(),
+        "Amount": -150.0,
+        "Bets": []  # Placeholder for embedding bet documents or references
+    }
+    transaction_id = db.Transaction.insert_one(transaction).inserted_id
+    print('Collection Transaction initialized successfully')
 
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS BetsInTransaction(
-            TransactionID INTEGER,
-            BetID INTEGER,
-        
-            PRIMARY KEY(TransactionID,BetID),
-            FOREIGN KEY (TransactionID) REFERENCES Accounts (TransactionID),
-            FOREIGN KEY (BetID) REFERENCES Accounts (BetID)
-        );
-    ''')
-    print('BetsInTransaction created successfully')
+    # BetsInTransaction (This concept is typically integrated directly into the Transactions collection in MongoDB)
+    bet_in_transaction = {
+        "TransactionID": transaction_id,
+        "BetID": [],  # This could be an array of BetIDs associated with the transaction
+    }
+    # In MongoDB, it's more common to embed this data directly in the Transaction or Account document
 
-    # The Bet Info is described as such
-    # The first letter describe the type of bet and what position the user placed
-    # O:Over U:Under W:Home team win L:Home team loss
+    # Bet Collection
+    bet = {
+        "AccountID": account_id,
+        "GameID": "Game123",
+        "BetType": "Over",
+        "Price": 50.0,
+        "Line": 200,
+        "Status": "Pending"
+    }
+    bet_id = db.Bet.insert_one(bet).inserted_id
+    print('Collection Bet initialized successfully')
 
+    # Adding the BetID to the Transaction's Bet array
+    db.Transaction.update_one({"_id": transaction_id}, {"$push": {"Bets": bet_id}})
 
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS Bet(
-            BetID INTEGER PRIMARY KEY AUTOINCREMENT,
-            AccountID INTEGER,
-            GameID VARCHAR(16),
-            BetType VARCHAR(10),
-            Price FLOAT,
-            Line INTEGER,
-            Status VARCHAR(10),
-                 
-            FOREIGN KEY (GameID) REFERENCES Game (GameID),
-            FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
-        );
-    ''')
-    print('Table Bets created successfully')
-
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS Game(
-            GameID INTEGER PRIMARY KEY AUTOINCREMENT,
-            Date DATETIME,
-            HomeTeam VARCHAR(3),
-            AwayTeam VARCHAR(3),
-            HomeFinalScore INTEGER,
-            AwayFinalScore INTEGER
-        );
-    ''')
-    print('Table Games created successfully')
-
-    # conn.execute('''
-    #     CREATE ROLE admin;  
-    # ''')
-
-    # conn.execute('''
-    #     GRANT UPDATE ON Account to admin;
-    # ''')
-
-    # conn.execute('''
-    #     GRANT admin to someone;
-    # ''')
-
-    conn.close()
+    # Game Collection
+    game = {
+        "Date": datetime.datetime.utcnow(),
+        "HomeTeam": "HTM",
+        "AwayTeam": "ATM",
+        "HomeFinalScore": 100,
+        "AwayFinalScore": 90
+    }
+    db.Game.insert_one(game)
+    print('Collection Game initialized successfully')
 
 if __name__ == "__main__":
     setup()
