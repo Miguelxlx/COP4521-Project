@@ -44,17 +44,20 @@ def setup():
     # The Bet Info is described as such
     # The first letter describe the type of bet and what position the user placed
     # O:Over U:Under W:Home team win L:Home team loss
-    # For O and U, it will be followed by a number which described the line
-    # Ex: O225- the user bet the total points of the game to be over 225
 
 
     conn.execute('''
         CREATE TABLE IF NOT EXISTS Bet(
             BetID INTEGER PRIMARY KEY AUTOINCREMENT,
-            GameID INTEGER,
-            BetInfo VARCHAR(5),
-            
-            FOREIGN KEY (GameID) REFERENCES Game (GameID)
+            AccountID INTEGER,
+            GameID VARCHAR(16),
+            BetType VARCHAR(10),
+            Price FLOAT,
+            Line INTEGER,
+            Status VARCHAR(10),
+                 
+            FOREIGN KEY (GameID) REFERENCES Game (GameID),
+            FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
         );
     ''')
     print('Table Bets created successfully')

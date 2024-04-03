@@ -16,8 +16,6 @@ def get_results(date):
 
     results = []
 
-    print(nba_json['response'][0]['season'])
-
     for game in nba_json['response']:
         visitor_name = game['teams']['visitors']['name']
         visitor_points = game['scores']['visitors']['points']
@@ -30,3 +28,7 @@ def get_results(date):
         results.append(result)
 
     return results
+
+if __name__ == "__main__":
+    results = get_results('2024-04-04')
+    print(results)
