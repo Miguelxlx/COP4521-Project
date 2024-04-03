@@ -1,4 +1,5 @@
 import requests
+from other.abbreviation import get_abbreviations
 
 API_KEY = '2e45b517a7f1b28c45fac18d4eefd331'
 
@@ -9,7 +10,10 @@ ODDS_FORMAT = 'decimal'
 DATE_FORMAT = 'iso'
 BOOKMAKERS = 'fanduel'
 
-def get_games():
+def get_odds():
+
+    abrv = get_abbreviations()
+
     odds_response = requests.get(
         f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
         params={
@@ -32,7 +36,7 @@ def get_games():
         for game in odds_json:
             time = game["commence_time"]
             home_team = game["home_team"]
-            away_team = game["away_team"]
+            visitor_team = game["away_team"]
             line = game["bookmakers"][0]["markets"][1]["outcomes"][0]["point"]
             over_price = game["bookmakers"][0]["markets"][1]["outcomes"][0]["price"]
             under_price = game["bookmakers"][0]["markets"][1]["outcomes"][1]["price"]
@@ -43,9 +47,11 @@ def get_games():
             head2head.append({"team_name":game["bookmakers"][0]["markets"][0]["outcomes"][1]["name"],
                     "price": game["bookmakers"][0]["markets"][0]["outcomes"][1]["price"]})
             
-            
-            g = {"time":time,"home_team":home_team,"away_team":away_team,"line":line,"over_price":over_price,"under_price":under_price,"h2h":head2head}
-            games.append(g)
+            # Onlye need the date for the key
+            key = time[0:10] + abrv[home_team] + abrv[visitor_team]
+
+            g = {"time":time,"home_team":home_team,"visitor_team":visitor_team,"line":line,"over_price":over_price,"under_price":under_price,"h2h":head2head}
+            games.append({key:g})
 
         return games
 
@@ -57,3 +63,7 @@ def get_games():
         # Check the usage quota
         # print('Remaining requests', odds_response.headers['x-requests-remaining'])
         # print('Used requests', odds_response.headers['x-requests-used'])
+
+if __name__ == "__main__":
+    games = get_odds()
+    print(games)
