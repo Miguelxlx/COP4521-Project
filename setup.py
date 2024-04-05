@@ -1,66 +1,68 @@
 from pymongo import MongoClient
 import datetime
+import bcrypt
 
 def setup():
-    # Connect to MongoDB
-    client = MongoClient('localhost', 27017)  # Adjust the connection string as necessary
+    client = MongoClient('localhost', 27017)
     db = client['bettingData']
     print('Connected to MongoDB successfully')
 
-    # Accounts Collection
-    account = {
-        "Username": "admin",
-        "Status": "Active",
-        "Email": "admin@example.com",
-        "Password": "securepassword",
-        "Balance": 1000.0,
-        "Transactions": []  # Placeholder for transaction documents
+    # Drop collections if they exist to avoid duplicates
+    db.users.drop()
+    db.transactions.drop()
+    db.bets.drop()
+    db.games.drop()
+    db.Account.drop()
+    db.Bet.drop()
+    db.Game.drop()
+    db.Transaction.drop()  
+
+    # Create hashed password
+    hashed_password = bcrypt.hashpw("securepassword".encode('utf-8'), bcrypt.gensalt())
+    
+    # Users Collection
+    user = {
+        "username": "admin",
+        "email": "admin@example.com",
+        "password": hashed_password.decode('utf-8'),
+        "role": "admin",  # Use "user" for regular users, "admin" for administrators
+        "balance": 1000.0
     }
-    account_id = db.Account.insert_one(account).inserted_id
-    print('Collection Account initialized successfully')
+    user_id = db.users.insert_one(user).inserted_id
+    print('Collection users initialized successfully')
 
     # Transactions Collection
     transaction = {
-        "AccountID": account_id,
-        "Date": datetime.datetime.utcnow(),
-        "Amount": -150.0,
-        "Bets": []  # Placeholder for embedding bet documents or references
+        "userid": user_id,
+        "date": datetime.datetime.utcnow(),
+        "amount": -150.0,
+        "bets": []  # Placeholder for embedding bet documents or references
     }
-    transaction_id = db.Transaction.insert_one(transaction).inserted_id
-    print('Collection Transaction initialized successfully')
+    transaction_id = db.transactions.insert_one(transaction).inserted_id
+    print('Collection transactions initialized successfully')
 
-    # BetsInTransaction (This concept is typically integrated directly into the Transactions collection in MongoDB)
-    bet_in_transaction = {
-        "TransactionID": transaction_id,
-        "BetID": [],  # This could be an array of BetIDs associated with the transaction
-    }
-    # In MongoDB, it's more common to embed this data directly in the Transaction or Account document
-
-    # Bet Collection
+    # Bets Collection
     bet = {
-        "AccountID": account_id,
-        "GameID": "Game123",
-        "BetType": "Over",
-        "Price": 50.0,
-        "Line": 200,
-        "Status": "Pending"
+        "transactionid": transaction_id,
+        "gameid": "Game123",
+        "bettype": "Over",
+        "price": 50.0,
+        "line": 200,
+        "status": "Pending"
     }
-    bet_id = db.Bet.insert_one(bet).inserted_id
-    print('Collection Bet initialized successfully')
+    db.bets.insert_one(bet)
+    print('Collection bets initialized successfully')
 
-    # Adding the BetID to the Transaction's Bet array
-    db.Transaction.update_one({"_id": transaction_id}, {"$push": {"Bets": bet_id}})
-
-    # Game Collection
+    # Games Collection
     game = {
-        "Date": datetime.datetime.utcnow(),
-        "HomeTeam": "HTM",
-        "AwayTeam": "ATM",
-        "HomeFinalScore": 100,
-        "AwayFinalScore": 90
+        "date": datetime.datetime.utcnow(),
+        "hometeam": "HTM",
+        "awayteam": "ATM",
+        "homefinalscore": 100,
+        "awayfinalscore": 90
     }
-    db.Game.insert_one(game)
-    print('Collection Game initialized successfully')
+    db.games.insert_one(game)
+    print('Collection games initialized successfully')
 
 if __name__ == "__main__":
     setup()
