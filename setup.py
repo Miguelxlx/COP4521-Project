@@ -6,16 +6,7 @@ def setup():
     client = MongoClient('localhost', 27017)
     db = client['bettingData']
     print('Connected to MongoDB successfully')
-
-    # Drop collections if they exist to avoid duplicates
-    db.users.drop()
-    db.transactions.drop()
-    db.bets.drop()
-    db.games.drop()
-    db.Account.drop()
-    db.Bet.drop()
-    db.Game.drop()
-    db.Transaction.drop()  
+    
 
     # Create hashed password
     hashed_password = bcrypt.hashpw("securepassword".encode('utf-8'), bcrypt.gensalt())
