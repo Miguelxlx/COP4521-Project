@@ -17,7 +17,7 @@ export const Header = () => {
 
     const logoutHandler = async() => {
         try {
-            await logoutApiCall().unwrap();
+            //await logoutApiCall().unwrap();
             dispatch(logout());
             navigate('/login');
         } catch (err) {

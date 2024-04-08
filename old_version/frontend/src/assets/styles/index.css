@@ -78,3 +78,10 @@ main {
   .customNavbar {
     background-color: #cf3e40 !important; /* Example: Blue color */
   }
+  
+  .login-page-wrapper {
+    display: flex;
+    justify-content: center; /* Centers the form container horizontally */
+    align-items: center; /* Centers the form container vertically */
+    min-height: 100vh; /* Use the entire screen height */
+  }

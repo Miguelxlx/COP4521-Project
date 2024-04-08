@@ -35,7 +35,7 @@ const RegisterScreen = () => {
 
     return (
         <Row className="justify-content-md-center">
-            <Col xs={12} md={6}>
+            <Col xl={12} md={6}>
                 <h1>Sign Up</h1>
                 {message && <div className="alert alert-danger">{message}</div>}
                 {isError && <div className="alert alert-danger">{error.data.message || 'Failed to register'}</div>}
