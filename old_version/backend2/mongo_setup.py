@@ -54,6 +54,3 @@ def setup():
     }
     db.games.insert_one(game)
     print('Collection games initialized successfully')
-
-if __name__ == "__main__":
-    setup()
