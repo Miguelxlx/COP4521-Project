@@ -37,17 +37,22 @@ def api_odds():
             line = game["bookmakers"][0]["markets"][1]["outcomes"][0]["point"]
             over_price = game["bookmakers"][0]["markets"][1]["outcomes"][0]["price"]
             under_price = game["bookmakers"][0]["markets"][1]["outcomes"][1]["price"]
-
-            head2head = []
-            head2head.append({"team_name":game["bookmakers"][0]["markets"][0]["outcomes"][0]["name"],
-                        "price": game["bookmakers"][0]["markets"][0]["outcomes"][0]["price"]})
-            head2head.append({"team_name":game["bookmakers"][0]["markets"][0]["outcomes"][1]["name"],
-                    "price": game["bookmakers"][0]["markets"][0]["outcomes"][1]["price"]})
             
             # Onlye need the date for the key
             key = time[0:10] + home_team + visitor_team
 
-            g = {"key":key, "time":time,"home_team":home_team,"visitor_team":visitor_team,"line":line,"over_price":over_price,"under_price":under_price, "h2h":head2head}
+            h2h_home_price = None
+            h2h_visitor_price = None
+
+            if game["bookmakers"][0]["markets"][0]["outcomes"][0]["name"] == home_team:
+                h2h_home_price = game["bookmakers"][0]["markets"][0]["outcomes"][0]["price"]
+                h2h_visitor_price = game["bookmakers"][0]["markets"][0]["outcomes"][1]["price"]
+            else:
+                h2h_home_price = game["bookmakers"][0]["markets"][0]["outcomes"][1]["price"]
+                h2h_visitor_price = game["bookmakers"][0]["markets"][0]["outcomes"][0]["price"]
+
+            g = {"key":key, "time":time,"home_team":home_team,"visitor_team":visitor_team,"line":line,"over_price":over_price,"under_price":under_price, "h2h_home_price": h2h_home_price, 'h2h_visitor_price':h2h_visitor_price}
+            
             games.append(g)
 
         return games
