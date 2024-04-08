@@ -54,6 +54,7 @@ function App() {
           odds.map((odd, index) => (
             <div key={index} style={{ marginBottom: '20px' }}>
               <h3>{odd.home_team} vs. {odd.visitor_team}</h3>
+              <h4>Over: {odd.over_price} Under: {odd.under_price}</h4>
               <select
                 value={betDetails[index]?.type || ''}
                 onChange={(e) => handleBetDetailChange(index, 'type', e.target.value)}
