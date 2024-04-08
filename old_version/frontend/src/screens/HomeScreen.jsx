@@ -1,57 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-const HomeScreen = () => {
-  const [games, setGames] = useState([]);
+function App() {
+  const [odds, setOdds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [betSlip, setBetSlip] = useState([]);
   // Updating to include bet amount, type, and team selection in one state object
   const [betDetails, setBetDetails] = useState({});
 
   useEffect(() => {
-    const API_KEY = '2e45b517a7f1b28c45fac18d4eefd331'; // Reminder: Fetch this securely from your server in production
-    const SPORT = 'basketball_nba';
-    const REGIONS = 'us';
-    const MARKETS = 'totals,h2h';
-    const ODDS_FORMAT = 'decimal';
-    const DATE_FORMAT = 'iso';
-    const BOOKMAKERS = 'fanduel';
-
-    const getGames = async () => {
-      setIsLoading(true);
-      const queryParams = new URLSearchParams({
-        api_key: API_KEY,
-        regions: REGIONS,
-        markets: MARKETS,
-        oddsFormat: ODDS_FORMAT,
-        dateFormat: DATE_FORMAT,
-        bookmakers: BOOKMAKERS
-      }).toString();
-
-      const url = `https://api.the-odds-api.com/v4/sports/${SPORT}/odds?${queryParams}`;
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch odds: status ${response.status}`);
-        }
-
-        const data = await response.json();
-        setGames(data);
-      } catch (error) {
-        console.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getGames();
+    fetchOdds();
   }, []);
+
+  const fetchOdds = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/odds");
+      const data = await response.json();
+      setOdds(data.odds);
+    } catch (error) {
+      console.error("Error fetching odds:", error);
+    }
+    finally{
+      setIsLoading(false);
+    }
+  };
 
   const handleBetDetailChange = (index, detail, value) => {
     setBetDetails(prev => ({
@@ -60,9 +32,9 @@ const HomeScreen = () => {
     }));
   };
 
-  const addToBetSlip = (game, index) => {
+  const addToBetSlip = (odd, index) => {
     const details = betDetails[index] || {};
-    const bet = { ...game, ...details };
+    const bet = { ...odd, ...details };
     setBetSlip(current => [...current, bet]);
   };
 
@@ -77,11 +49,11 @@ const HomeScreen = () => {
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <div style={{ flex: 3, padding: '20px' }}>
         {isLoading ? (
-          <div>Loading games...</div>
+          <div>Loading odds...</div>
         ) : (
-          games.map((game, index) => (
+          odds.map((odd, index) => (
             <div key={index} style={{ marginBottom: '20px' }}>
-              <h3>{game.home_team} vs. {game.away_team}</h3>
+              <h3>{odd.home_team} vs. {odd.visitor_team}</h3>
               <select
                 value={betDetails[index]?.type || ''}
                 onChange={(e) => handleBetDetailChange(index, 'type', e.target.value)}
@@ -98,8 +70,8 @@ const HomeScreen = () => {
                   style={{ marginRight: '10px' }}
                 >
                   <option value="">Select Team</option>
-                  <option value={game.home_team}>{game.home_team}</option>
-                  <option value={game.away_team}>{game.away_team}</option>
+                  <option value={odd.home_team}>{odd.home_team}</option>
+                  <option value={odd.visitor_team}>{odd.visitor_team}</option>
                 </select>
               )}
               <input
@@ -109,7 +81,7 @@ const HomeScreen = () => {
                 onChange={(e) => handleBetDetailChange(index, 'amount', e.target.value)}
                 style={{ marginRight: '10px' }}
               />
-              <button onClick={() => addToBetSlip(game, index)}>Add to Bet Slip</button>
+              <button onClick={() => addToBetSlip(odd, index)}>Add to Bet Slip</button>
             </div>
           ))
         )}
@@ -118,7 +90,7 @@ const HomeScreen = () => {
         <h2>Bet Slip</h2>
         {betSlip.map((bet, index) => (
           <div key={index} style={{ marginBottom: '10px' }}>
-            <p>{bet.home_team} vs. {bet.away_team}</p>
+            <p>{bet.home_team} vs. {bet.visitor_team}</p>
             <p>Bet Amount: ${bet.amount}</p>
           </div>
         ))}
@@ -127,6 +99,6 @@ const HomeScreen = () => {
       </div>
     </div>
   );
-};
+}
 
-export default HomeScreen;
+export default App;
