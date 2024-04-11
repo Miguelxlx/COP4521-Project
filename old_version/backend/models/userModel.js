@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false,
     },
+    balance: {
+        type: int,
+        required: true,
+        default: 50,
+    },
 },{
     timestamps: true
 });
