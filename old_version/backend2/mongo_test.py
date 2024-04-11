@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+
 uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
 
 # Create a new client and connect to the server
@@ -10,7 +11,7 @@ try:
     db = client[dbname]
     
     # Specify the collections to retrieve entries from
-    collections_to_query = ['bets', 'transactions', 'games', 'users']
+    collections_to_query = ['transactions', 'games', 'users']
     
     for collection_name in collections_to_query:
         # Access the collection
