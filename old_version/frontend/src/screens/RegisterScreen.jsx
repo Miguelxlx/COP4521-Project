@@ -12,33 +12,50 @@ const RegisterScreen = () => {
     const [message, setMessage] = useState(null);
 
     const navigate = useNavigate();
-    const [register, { isLoading, isSuccess, isError, error }] = useRegisterMutation();
-
-    useEffect(() => {
-        if (isSuccess) {
-            navigate('/');
-        }
-    }, [isSuccess, navigate]);
 
     const submitHandler = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
         } else {
+            const userData = {
+                email: email,
+                password: password
+            };
+    
             try {
-                await register({ name, email, password }).unwrap();
+                const response = await fetch("http://127.0.0.1:5000/check_registration", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.valid === true){
+                        navigate('/')
+                    }
+                    else{
+                        setMessage('Email already in use');
+                    }
+                } else {
+                    setMessage('Email already in use');
+                    throw new Error('Failed to register');
+                }
             } catch (err) {
                 console.error('Failed to register: ', err);
             }
         }
     };
+    
 
     return (
         <Row className="justify-content-md-center">
             <Col xl={12} md={6}>
                 <h1>Sign Up</h1>
                 {message && <div className="alert alert-danger">{message}</div>}
-                {isError && <div className="alert alert-danger">{error.data.message || 'Failed to register'}</div>}
                 <Form onSubmit={submitHandler}>
                     <Form.Group controlId='name'>
                         <Form.Label>Name</Form.Label>
@@ -80,7 +97,7 @@ const RegisterScreen = () => {
                         ></Form.Control>
                     </Form.Group>
 
-                    <Button type='submit' variant='primary' disabled={isLoading}>
+                    <Button type='submit' variant='primary'>
                         Register
                     </Button>
                 </Form>

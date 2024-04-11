@@ -10,11 +10,12 @@ import { toast } from 'react-toastify';
 const LoginScreen = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [password, setPassword] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [login, { isLoading}] = useLoginMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
@@ -29,13 +30,30 @@ const LoginScreen = () => {
     }, [userInfo, redirect, navigate]);
 
     const submitHandler = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        setIsLoading(true);
+    
         try {
-            const res = await login({ email, password }).unwrap();
-            dispatch(setCredentials({...res, }));
-            navigate(redirect);
-        } catch (err) {
-            toast.error(err?.data?.message || err.error);
+            const response = await fetch('/check_registration', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+    
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message); // Display success message
+                // Redirect or handle valid registration
+            } else {
+                alert(data.message); // Display error message
+            }
+        } catch (error) {
+            console.error('Registration check error:', error);
+            alert('An error occurred during registration check');
+        } finally {
+            setIsLoading(false);
         }
     };
 
