@@ -49,6 +49,11 @@ function App() {
       // navigate('/login');
       return;
     }
+    const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
+    if (userInfo.balance < totalBetAmount) {
+        alert("Insufficient funds.");
+        return;
+    }
     console.log("Submitting Bet Slip:", betSlip);
     try {
       // Map through each bet in the slip and send them individually
