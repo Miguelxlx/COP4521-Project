@@ -7,9 +7,9 @@ import Loader from '../components/Loader';
 import { useLoginMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
+
 const LoginScreen = () => {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
 
