@@ -19,12 +19,13 @@ const RegisterScreen = () => {
             setMessage('Passwords do not match');
         } else {
             const userData = {
+                name: name,
                 email: email,
                 password: password
             };
     
             try {
-                const response = await fetch("http://127.0.0.1:5000/check_registration", {
+                const response = await fetch("http://127.0.0.1:5000/register", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -35,6 +36,7 @@ const RegisterScreen = () => {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.valid === true){
+                        setMessage('Registration successful');
                         navigate('/')
                     }
                     else{

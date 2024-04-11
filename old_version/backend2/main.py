@@ -21,9 +21,6 @@ db = client['bettingData']
 app = Flask(__name__)
 CORS(app)  # This enables CORS for all domains. Adjust as necessary for production.
 
-client = MongoClient('localhost', 27017)
-db = client['bettingData']
-
 @app.route("/odds", methods=["GET"])
 def get_odds():
     odds = api_odds()
@@ -47,15 +44,14 @@ def register():
     
     # Users Collection
     user = {
-        "username": name,
+        "name": name,
         "email": email,
         "password": hashed_password.decode('utf-8'),
-        "role": "admin",  # Use "user" for regular users, "admin" for administrators
+        "role": "user",  # Use "user" for regular users, "admin" for administrators
         "balance": 1000.0
     }
 
     db.users.insert_one(user)
-    return jsonify({'valid': True, 'message': 'Registration valid!'})
     return jsonify({'valid': True, 'message': 'Registration valid!'})
     
     
