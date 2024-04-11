@@ -59,21 +59,13 @@ def register():
 def check_login():
     data = request.get_json()
     user = db.users.find_one({"email": data['email']})
-    if user and user['balance'] >= data['amount']:
-        new_balance = user['balance'] - data['amount']
-        db.users.update_one({"email": data['email']}, {"$set": {"balance": new_balance}})
-        bet = {
-            "userid": user['_id'],
-            "gameid": data['gameid'],
-            "bettype": data['bettype'],
-            "price": data['amount'],
-            "line": data['line'],
-            "status": "Pending"
-        }
-        db.bets.insert_one(bet)
-        return jsonify({"message": "Bet placed successfully", "new_balance": new_balance}), 200
+    if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+        # Successful login
+        return jsonify({"message": "Login successful"}), 200
     else:
-        return jsonify({"message": "Insufficient balance"}), 403
+        # Failed login
+        return jsonify({"message": "Invalid email or password"}), 403
+
 
 if __name__ == '__main__':
     app.run(debug=True)
