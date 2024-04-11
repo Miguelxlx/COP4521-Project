@@ -28,7 +28,7 @@ Run the frontend by navigating to the COP4521-Project/old_version/frontend direc
 ```
 npm start
 ```
-This will start the web application. (Drake: For me it doesn't show on localhost:5000, but it shows on http://192.168.56.1:5000/. Don't know if this is correct or not.)
+This will start the web application. (Drake: For me it doesn't show on localhost:5000 but shows on the network address. Probably because main.py is running in backend2.)
 
 **ALSO** do you think Sharanya will try to run the app on her Ubuntu environment?
 
