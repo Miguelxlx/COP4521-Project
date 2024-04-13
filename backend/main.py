@@ -5,6 +5,7 @@ import bcrypt
 import datetime
 from config import app
 from odds import api_odds
+from odds_sample import get_odd_sample
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import bcrypt
@@ -23,7 +24,8 @@ CORS(app)  # This enables CORS for all domains. Adjust as necessary for producti
 
 @app.route("/odds", methods=["GET"])
 def get_odds():
-    odds = api_odds()
+    # odds, remaing_requests = api_odds()
+    odds = get_odd_sample()
     return jsonify({"odds": odds})
 
 @app.route('/register', methods=['POST'])

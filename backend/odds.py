@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = '9c2217366d70c38fe65769268e689c76'
+API_KEY = '6364d088201c3199ab2e6345fb623beb'
 
 SPORT = 'basketball_nba'
 REGIONS = 'us' 
@@ -28,6 +28,8 @@ def api_odds():
         return None
     else:
         odds_json = odds_response.json()
+        remaining_requests = odds_response.headers['x-requests-remaining']
+        print(remaining_requests)
 
         games = []
         for game in odds_json:
@@ -55,7 +57,7 @@ def api_odds():
             
             games.append(g)
 
-        return games
+        return games, remaining_requests
 
         # Games
         # List of dicts for each game
@@ -63,8 +65,6 @@ def api_odds():
         # h2h dict has two dicts with each team_name and price
 
         # Check the usage quota
-        # print('Remaining requests', odds_response.headers['x-requests-remaining'])
-        # print('Used requests', odds_response.headers['x-requests-used'])
 
 if __name__ == "__main__":
     print(api_odds())
