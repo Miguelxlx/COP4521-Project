@@ -46,7 +46,8 @@ const LoginScreen = () => {
             if (response.ok) {
                 setModalMessage('Login successful');
                 setShowModal(true);
-                dispatch(setCredentials(data));  // Assuming setCredentials will set the user info and auth tokens in the Redux store
+                dispatch(setCredentials(data.userId));
+                
                 setTimeout(() => {
                     handleCloseModal();
                     navigate(redirect);
