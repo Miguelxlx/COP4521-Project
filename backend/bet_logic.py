@@ -1,60 +1,91 @@
 from results import get_results
-from odds import get_odds
 import datetime
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from bson import ObjectId 
+import time
 
-# 4 options: over, under, home win , away win
-# To place a bet we need to store: the game key, the bet type, the price and the line if needed
-def place_bet(game_key, bet_type, price, line):
-    # Ex
-    game_key = '2024-04-03CHAPOR'
-    bet_type = 'over'
-    price = '1.91'
-    line = '213.0'
-    status = "Waiting"
+uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
 
-    # Store that in the db
-    # cur.execute("INSERT INTO Bet(GameID,BetType,Price,Line,Status)VALUES(?,?,?,?,?);", 
-    # (game_key,bet_type,price,line,status)
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+
+db = client['bettingData']
+
+transaction_collection = db['transactions']
+bet_collection = db['bets']
+user_collection = db['users']
 
 
-def check_bet(game_key,account_id):
-    # Look up row in Bet table that matches gameID and accountID
-    # Get date and convert to 'YYYY-MM-DD' format
-    # Get home team, visitor team, bet type, line, price
-    visitor_team = 'Toronto Raptors'
-    home_team = 'Minnesota Timberwolves'  
-    bet_type = 'Over' 
-    price = '1.91'
-    line = '210'
-    date = '2024-04-04'
+def get_all_pending_bets(user_id):
+    try:
+        # Query the bets collection for documents with matching userId
+        transaction_cursor = transaction_collection.find({'userId': user_id})
+
+        pending_bets = []
+        for transaction in transaction_cursor:
+            bet_ids = transaction['betIds']
+            for bet in bet_ids:
+                bet_cursor = bet_collection.find_one({'_id': bet})
+                if bet_cursor['status'] == 'Pending':
+                    pending_bets.append(bet_cursor)
+    except Exception as e:
+        print(f"Error occurred while checking bets status: {e}")
+
+    return pending_bets
+
+def check_bet(bet,userId):
+    date = bet['gameTime']
     games = get_results(date)
 
     for game in games:
-        if game['home_team'] == home_team and game['visitor_team'] == visitor_team:
-            # Game is not finished
+        if game['home_team'] == bet['home_team'] and game['visitor_team'] == bet['visitor_team']:
             if game['visitor_points'] is None:
-                return 0
+                return 0, 0
             else:
-                status = bet_status(game['bet_type'], game['home_points'],game['visitor_points'],game['line'])
-                # Modify row with new status
-                if status =="Win":
-                    money = 0
-                    # Insert money * price_multiplier to user's account
+                status = bet_status(bet['wager'], game['home_points'],game['visitor_points'],game['line'])
 
-                return 1
+                if status == 1:
+                    profit = (bet['amountPlaced'] * bet['odds']) - ['amount_placed']
+                    return 1, profit
+                elif status == -1:
+                    profit = - (bet['amountPlaced'])
+                    return -1 , 0 
     
     # Did not find game
-    return 0
+    return 0, 0
 
 def bet_status(bet_type,home_points,visitor_points,line):
     home_points = int(home_points)
     visitor_points = int(visitor_points)
-    if (bet_type == "Over" and home_points + visitor_points > line)                                    or (bet_type == "Under" and home_points + visitor_points < line)                                   or (bet_type == "Home Win" and home_points > visitor_points)                                         or(bet_type == "Away Win" and home_points < visitor_points): 
-        return "Win"
+    if (bet_type == "Over" and home_points + visitor_points > line)                                    or (bet_type == "Under" and home_points + visitor_points < line)                                   or (bet_type == "home_win" and home_points > visitor_points)                                         or(bet_type == "visitor_win" and home_points < visitor_points): 
+        return 1
     else:
-        return "Lose"
-
-
-
+        return -1
+    
 if __name__ == "__main__":
-    place_bet()
+    userId = ObjectId('661ecb2a3587f557bb71755f')
+    pending_bets = get_all_pending_bets(userId)
+    
+    for pending_bet in pending_bets:
+        status, profit = check_bet(pending_bet,userId)
+        if status == 1:
+            print("Won bet")
+
+            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'W'}})
+            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
+
+            user = user_collection.find_one({'_id':userId})
+            old_balance = user['balance']
+            new_balance = user['balance'] + profit + pending_bet['amountPlaced']
+
+            user_collection.update_one({"_id": userId}, {"$set": {"balance": new_balance}})
+        elif status == -1:
+            print("Lost bet")
+            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'L'}})
+            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
+            pass
+        else:
+            print("Bet still pending")
+
+        time.sleep(5)
