@@ -7,7 +7,7 @@ import {
   RouterProvider
 } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async';
-//import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Provider } from 'react-redux';
 import store from './store';
 import './assets/styles/bootstrap.custom.css';
@@ -17,6 +17,7 @@ import reportWebVitals from './reportWebVitals';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import TransactionScreen from './screens/TransactionScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +26,7 @@ const router = createBrowserRouter(
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/test" element={<div>Test Route</div>} />
       <Route path="/register" element={<RegisterScreen />} />
+      <Route path="/transactions" element={<TransactionScreen />} />
     </Route>
   )
 )

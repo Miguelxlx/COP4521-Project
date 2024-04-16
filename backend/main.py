@@ -9,6 +9,7 @@ from odds_sample import get_odd_sample
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import bcrypt
+from bson import ObjectId
 
 MONGO_URI = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/test?retryWrites=true&w=majority"
 
@@ -21,6 +22,18 @@ db = client['bettingData']
 
 app = Flask(__name__)
 CORS(app)  # This enables CORS for all domains. Adjust as necessary for production.
+
+def convert_objectid(obj):
+    """Recursively convert ObjectId to string in nested documents."""
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    elif isinstance(obj, dict):
+        for key, value in obj.items():
+            obj[key] = convert_objectid(value)
+    elif isinstance(obj, list):
+        obj = [convert_objectid(item) for item in obj]
+    return obj
+
 
 @app.route("/odds", methods=["GET"])
 def get_odds():
@@ -67,6 +80,20 @@ def check_login():
     else:
         # Failed login
         return jsonify({"message": "Invalid email or password"}), 403
+
+# @app.route('/transactions', methods=['GET'])
+# def get_transactions():
+#     user_id = request.args.get('user_id')  # The user ID should be passed as a query parameter
+#     transactions = db.transactions.find({"userid": user_id})
+#     transaction_list = [trans for trans in transactions]  # Convert cursor to list
+#     return jsonify({"transactions": transaction_list})
+
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    transactions = db.transactions.find()
+    transaction_list = [convert_objectid(transaction) for transaction in transactions]
+    return jsonify({"transactions": transaction_list})
+
 
 
 if __name__ == '__main__':

@@ -12152,3 +12152,78 @@ fieldset:disabled .btn {
   align-items: center; /* Centers the form container vertically */
   min-height: 100vh; /* Use the entire screen height */
 }
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody + tbody {
+  border-top: 2px solid #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,.05);
+}
+
+.table-hover tbody tr:hover {
+  color: #212529;
+  background-color: rgba(0,0,0,.075);
+}
+
+.container {
+  padding: 2rem;
+}
+
+.brand-name {
+  margin-right: 30px; /* Space between brand and transactions link */
+}
+
+.customNavbar {
+  background-color: #343a40; /* Dark grey background */
+  padding-left: 0; /* Align the content more to the left */
+}
+
+.customNavbar .navbar-brand {
+  margin-right: 0; /* Remove the space between the brand and the first nav item */
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.customNavbar .nav-link, .customNavbar .dropdown-toggle {
+  color: #ffffff; /* White color for visibility */
+  transition: background-color 0.3s ease-in-out;
+}
+
+.customNavbar .nav-link:hover, .customNavbar .dropdown-item:hover, .customNavbar .nav-link:focus, .customNavbar .dropdown-toggle:hover {
+  background-color: #555; /* Darker shade for hover */
+  color: #fff;
+  border-radius: 0; /* Ensures the hover effect spans the full height of the Navbar */
+}
+
+/* Ensuring the hover effect covers the full height of the Navbar */
+.customNavbar .nav-link, .customNavbar .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.container-fluid {
+  padding-right: 0;
+  padding-left: 0;
+}
+
