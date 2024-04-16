@@ -84,18 +84,30 @@ def submit_transaction():
 
     if user and user_balance >= transaction_amount:
         bet_ids = []
-        # for bet in bet_slip:
-        #     bet_entry = {
-        #         'gameId': bet['key'],
-        #         'wager': bet['wager'], # Should be over, under, home_win or visitor_win
-        #         'line' : bet['line'], # Should be an int or None if it is over/under
-        #         'odds': bet['odds'],  # The return
-        #         'amountPlaced': bet['amountPlaced'], 
-        #         'status': 'Waiting',
-        #     }
+        for bet in bet_slip:
+            wager = bet['team']
+            odds = 0
 
-        #     entry = db.bets.insert_one(bet_entry)
-        #     bet_ids.append(entry.inserted_id)
+            if wager == 'Over':
+                odds = bet['over_price']
+            if wager == 'Under':
+                odds = bet['under_price']
+            if wager == 'home_win':
+                odds = bet['h2h_home_price']
+            if wager == 'visitor_win':
+                odds = bet['h2h_visitor_price']
+
+            bet_entry = {
+                'gameId': bet['key'],
+                'wager': wager, 
+                'line' : bet['line'], 
+                'odds': odds, 
+                'amountPlaced': bet['amount'], 
+                'status': 'Waiting',
+            }
+
+            entry = db.bets.insert_one(bet_entry)
+            bet_ids.append(entry.inserted_id)
         
         transaction = {
             "userId" : user_id,
