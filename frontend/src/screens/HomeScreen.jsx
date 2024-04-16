@@ -85,7 +85,14 @@ function App() {
     }
   };
 
+  const handleRemoveBet = (index) => {
+    // Create a new array excluding the bet at the provided index
+    const newBetSlip = betSlip.filter((_, i) => i !== index);
+    setBetSlip(newBetSlip);
+  };
+
   const totalBetAmount = betSlip.reduce((acc, bet) => acc + (parseFloat(bet.amount) || 0), 0);
+
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -136,6 +143,7 @@ function App() {
           <div key={index} style={{ marginBottom: '10px' }}>
             <p>{bet.home_team} vs. {bet.visitor_team}</p>
             <p>Bet Amount: ${bet.amount}</p>
+            <button onClick={() => handleRemoveBet(index)}>Remove Bet</button>
           </div>
         ))}
         <div>Total Bet Amount: ${totalBetAmount.toFixed(2)}</div>
