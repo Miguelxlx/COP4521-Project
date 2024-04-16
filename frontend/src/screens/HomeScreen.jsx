@@ -104,8 +104,19 @@ function App() {
                   style={{ marginRight: '10px' }}
                 >
                   <option value="">Select Team</option>
-                  <option value={odd.home_team}>{odd.home_team}</option>
-                  <option value={odd.visitor_team}>{odd.visitor_team}</option>
+                  <option value='home_win'>{odd.home_team}</option>
+                  <option value='visitor_win'>{odd.visitor_team}</option>
+                </select>
+              )}
+              {betDetails[index]?.type === 'O/U' && (
+                <select
+                  value={betDetails[index]?.team || ''}
+                  onChange={(e) => handleBetDetailChange(index, 'team', e.target.value)}
+                  style={{ marginRight: '10px' }}
+                >
+                  <option value="">Select</option>
+                  <option value='Over'>Over</option>
+                  <option value='Under'>Under</option>
                 </select>
               )}
               <input
