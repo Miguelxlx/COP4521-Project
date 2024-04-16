@@ -7,6 +7,7 @@ function App() {
   const [betSlip, setBetSlip] = useState([]);
   // Updating to include bet amount, type, and team selection in one state object
   const [betDetails, setBetDetails] = useState({});
+  const [message, setMessage] = useState(null);
 
   const userInfo = useSelector((state) => state.auth.userInfo); // Access login status
 
@@ -19,6 +20,7 @@ function App() {
     try {
       const response = await fetch("http://127.0.0.1:5000/odds");
       const data = await response.json();
+      console.log(data.remaining_requests); 
       setOdds(data.odds);
     } catch (error) {
       console.error("Error fetching odds:", error);
@@ -42,7 +44,6 @@ function App() {
   };
 
   const handleSubmitBetSlip = async () => {
-
     if (!userInfo) {
       alert("You must be logged in to place bets.");
       // Alternatively, redirect to login page:
@@ -50,38 +51,27 @@ function App() {
       return;
     }
     const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
-    if (userInfo.balance < totalBetAmount) {
-        alert("Insufficient funds.");
-        return;
+
+    const userData = {
+      id: userInfo,
+      total: totalBetAmount,
+      betSlip: betSlip
+    };
+
+    const response = await fetch('http://127.0.0.1:5000/submit_transaction', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData), // Send each bet details
+    });
+
+    if(!response.ok){
+      // setMessage('Insufficient Balance');
+      throw new Error('Failed to submit bet slip');
     }
-    console.log("Submitting Bet Slip:", betSlip);
-    try {
-      // Map through each bet in the slip and send them individually
-      const promises = betSlip.map(async (bet) => {
-        const response = await fetch('http://127.0.0.1:5000/bet_logic', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // Include authorization header if needed
-            // 'Authorization': `Bearer ${yourAuthToken}`
-          },
-          body: JSON.stringify(bet), // Send each bet details
-        });
-  
-        if (!response.ok) {
-          throw new Error('Failed to submit a bet');
-        }
-  
-        return response.json();
-      });
-  
-      // Wait for all bets to be submitted
-      const results = await Promise.all(promises);
-      console.log("All bets submitted successfully", results);
-      // Handle success, such as notifying the user or clearing the bet slip
-    } catch (error) {
-      console.error("Error submitting bets:", error.message); // Or display an error to the user
-      // Handle error, such as notifying the user about the failure
+    else{
+      console.log("All bets submitted successfully")
     }
   };
 
@@ -132,6 +122,7 @@ function App() {
       </div>
       <div style={{ flex: 1, padding: '20px' }}>
         <h2>Bet Slip</h2>
+        {message && <div className="alert alert-danger">{message}</div>}
         {betSlip.map((bet, index) => (
           <div key={index} style={{ marginBottom: '10px' }}>
             <p>{bet.home_team} vs. {bet.visitor_team}</p>
