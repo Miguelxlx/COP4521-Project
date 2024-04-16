@@ -13,11 +13,14 @@ import store from './store';
 import './assets/styles/bootstrap.custom.css';
 import './assets/styles/index.css';
 import App from './App';
+import AdminRoute from './components/AdminRoute';
 import reportWebVitals from './reportWebVitals';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import TransactionScreen from './screens/TransactionScreen';
+import TransactionsScreen from './screens/TransactionsScreen';
+import UserListScreen from './screens/UserListScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +30,11 @@ const router = createBrowserRouter(
       <Route path="/test" element={<div>Test Route</div>} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/transactions" element={<TransactionScreen />} />
+      <Route path="/transactions" element={<TransactionsScreen />} />
+
+      <Route path='' element={<AdminRoute />}>
+        <Route path='/admin/userlist' element={<UserListScreen />} />
+      </Route>
     </Route>
   )
 )

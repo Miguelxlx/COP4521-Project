@@ -67,16 +67,16 @@ def register():
     }
 
     db.users.insert_one(user)
-    return jsonify({'valid': True, 'message': 'Registration valid!'})
-    
+    return jsonify({'valid': True, 'message': 'Registration valid!'})   
     
 @app.route('/check_login', methods=['POST'])
 def check_login():
     data = request.get_json()
     user = db.users.find_one({"email": data['email']})
     if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+        print('successful login')
         # Successful login
-        return jsonify({"message": "Login successful"}), 200
+        return jsonify({"message": "Login successful", "userId":str(user['_id'])}), 200
     else:
         # Failed login
         return jsonify({"message": "Invalid email or password"}), 403
@@ -94,6 +94,71 @@ def get_transactions():
     transaction_list = [convert_objectid(transaction) for transaction in transactions]
     return jsonify({"transactions": transaction_list})
 
+@app.route('/submit_transaction', methods=['POST'])
+def submit_transaction():
+    data = request.get_json()
+
+    user_id =  ObjectId(data['id'])
+    transaction_amount = data['total']
+    bet_slip = data['betSlip']
+    time_placed = datetime.datetime.now()
+    print(bet_slip)
+
+    user = db.users.find_one({"_id": user_id})
+    user_balance = user['balance']
+
+    if user and user_balance >= transaction_amount:
+        bet_ids = []
+        for bet in bet_slip:
+            print('bet')
+            wager = bet['team']
+            odds = 0
+
+            if wager == 'Over':
+                odds = bet['over_price']
+            if wager == 'Under':
+                odds = bet['under_price']
+            if wager == 'home_win':
+                odds = bet['h2h_home_price']
+            if wager == 'visitor_win':
+                odds = bet['h2h_visitor_price']
+
+            bet_entry = {
+                'betTime': time_placed,
+                'homeTeam': bet['home_team'],
+                'visitorTeam': bet['visitor_team'],
+                'gameTime': bet['time'],
+                'wager': wager, 
+                'line' : bet['line'], 
+                'odds': odds, 
+                'amountPlaced': bet['amount'], 
+                'status': 'Pending'
+            }
+
+            entry = db.bets.insert_one(bet_entry)
+            print('inserted bet')
+            bet_ids.append(entry.inserted_id)
+        
+        print('transaction')
+        transaction = {
+            "userId" : user_id,
+            "transactionTime" : time_placed,
+            "amount": transaction_amount,
+            "betIds": bet_ids
+        }
+
+        db.transactions.insert_one(transaction)
+
+        print('inserted transaction')
+    
+        db.users.update_one({"_id": user_id}, {"$set": {"balance": user_balance - transaction_amount}})
+
+        print('updated user')
+
+        return jsonify({"message": "Transaction Success"}), 200
+    else:
+        # Failed login
+        return jsonify({"message": "Transaction Failed"}), 403
 
 
 if __name__ == '__main__':
