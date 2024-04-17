@@ -53,7 +53,7 @@ function App() {
     const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
 
     const userData = {
-      id: userInfo,
+      id: userInfo.id,
       total: totalBetAmount,
       betSlip: betSlip
     };

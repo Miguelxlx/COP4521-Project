@@ -74,9 +74,14 @@ def check_login():
     data = request.get_json()
     user = db.users.find_one({"email": data['email']})
     if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+
+        user = {
+            'id': str(user['_id']), 
+            'username': user['name']
+        }
+
         print('successful login')
-        # Successful login
-        return jsonify({"message": "Login successful", "userId":str(user['_id'])}), 200
+        return jsonify({"message": "Login successful", "user":user}), 200
     else:
         # Failed login
         return jsonify({"message": "Invalid email or password"}), 403

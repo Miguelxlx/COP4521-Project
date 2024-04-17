@@ -45,6 +45,7 @@ const LoginScreen = () => {
             const data = await response.json();
             if (response.ok) {
                 setModalMessage('Login successful');
+                console.log(data)
                 setShowModal(true);
                 dispatch(setCredentials(data.userId));
                 
