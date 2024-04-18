@@ -90,6 +90,7 @@ def check_login():
         user = {
             'id': str(user['_id']), 
             'username': user['name'],
+            'email' : user['email'],
             'balance' : user['balance']
         }
 
@@ -175,7 +176,15 @@ def submit_transaction():
         # Update user balance
         db.users.update_one({"_id": user_id}, {"$set": {"balance": user_balance - transaction_amount}})
 
-        return jsonify({"message": "Transaction Success"}), 200
+        # User info passed back to the frontend
+        user = {
+            'id': str(user['_id']), 
+            'username': user['name'],
+            'email' : user['email'],
+            'balance' : user_balance - transaction_amount
+        }
+
+        return jsonify({"message": "Transaction Success", "user":user}), 200
     else:
         return jsonify({"message": "Transaction Failed"}), 403
 

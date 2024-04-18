@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setCredentials } from '../slices/authSlice';
 
 function App() {
   const [odds, setOdds] = useState([]);
@@ -9,6 +10,7 @@ function App() {
   // Updating to include bet amount, type, and team selection in one state object
   const [betDetails, setBetDetails] = useState({});
   const [message, setMessage] = useState(null);
+  const dispatch = useDispatch();
 
   const userInfo = useSelector((state) => state.auth.userInfo); // Access login status
 
@@ -87,13 +89,15 @@ function App() {
       body: JSON.stringify(transactionData), // Send each bet details
     });
 
+    const data = await response.json()
     if(!response.ok){
       // setMessage('Insufficient Balance');
       throw new Error('Failed to submit bet slip');
       
     }
     else{
-      // userInfo.balance = userInfo.balance - totalBetAmount;
+      dispatch(setCredentials(data.user));
+      console.log(data.user)
       console.log("All bets submitted successfully")
       setBetSlip([]); // Clear the bet slip
       setMessage("Bet submitted successfully! Your balance has been updated.");
