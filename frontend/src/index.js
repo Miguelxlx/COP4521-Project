@@ -19,7 +19,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import TransactionScreen from './screens/TransactionScreen';
-import TransactionsScreen from './screens/TransactionsScreen';
+import ProfileScreen from './screens/ProfileScreen';
 import UserListScreen from './screens/UserListScreen';
 
 const router = createBrowserRouter(
@@ -30,7 +30,7 @@ const router = createBrowserRouter(
       <Route path="/test" element={<div>Test Route</div>} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/transactions" element={<TransactionScreen />} />
-      <Route path="/transactions" element={<TransactionsScreen />} />
+      <Route path="/profile" element={<ProfileScreen />} />
 
       <Route path='' element={<AdminRoute />}>
         <Route path='/admin/userlist' element={<UserListScreen />} />

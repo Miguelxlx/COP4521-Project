@@ -11,6 +11,7 @@ from pymongo.server_api import ServerApi
 import bcrypt
 from bson import ObjectId
 
+
 MONGO_URI = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/test?retryWrites=true&w=majority"
 
 uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
@@ -67,7 +68,29 @@ def register():
     }
 
     db.users.insert_one(user)
-    return jsonify({'valid': True, 'message': 'Registration valid!'})   
+    return jsonify({'valid': True, 'message': 'Registration valid!'})  
+
+@app.route('/profile', methods=['GET']) 
+def get_profile():
+
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+
+    # Fetch user details from the database
+    user = db['users'].find_one({"email": email})
+    if user:
+        # Remove sensitive data before sending it to the client
+        user.pop('password', None)  # Remove password if it's stored in the user document
+        user_data = {
+            'name': user.get('name', ''),
+            'email': user.get('email', ''),
+            'balance': user.get('balance', 0.0)
+        }
+        return jsonify(user_data), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
+
     
 @app.route('/check_login', methods=['POST'])
 def check_login():
