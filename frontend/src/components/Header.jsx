@@ -31,11 +31,11 @@ export const Header = () => {
                         <Nav className="me-auto">
                             <LinkContainer to='/transactions'>
                                 <Nav.Link><FaExchangeAlt /> Transactions</Nav.Link>
-                            </LinkContainer>
+                            </LinkContainer>                    
                         </Nav>
                         <Nav>
                             {userInfo ? (
-                                <NavDropdown title={userInfo.username} id='username-dropdown'>
+                                <NavDropdown title={`${userInfo.username} - $${userInfo.balance.toFixed(2)}`} id='username-dropdown'>
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Profile</NavDropdown.Item>
                                     </LinkContainer>
