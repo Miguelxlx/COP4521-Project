@@ -35,24 +35,28 @@ def get_all_pending_bets(user_id):
     return pending_bets
 
 def check_bet(bet,userId):
-    date = bet['gameTime']
+    date = bet['gameTime'][:10]
     games = get_results(date)
 
+
     for game in games:
-        if game['home_team'] == bet['home_team'] and game['visitor_team'] == bet['visitor_team']:
+        if game['home_team'] == bet['homeTeam'] and game['visitor_team'] == bet['visitorTeam']:
             if game['visitor_points'] is None:
                 return 0, 0
             else:
-                status = bet_status(bet['wager'], game['home_points'],game['visitor_points'],game['line'])
+                status = bet_status(bet['wager'], game['home_points'],game['visitor_points'],bet['line'])
 
                 if status == 1:
-                    profit = (bet['amountPlaced'] * bet['odds']) - ['amount_placed']
+                    print("amountPlaced:",int(bet['amountPlaced']))
+                    print("Odds:",int(bet['odds']))
+                    profit = (int(bet['amountPlaced']) * int(bet['odds']))
+                    print('Profit: ',profit)
                     return 1, profit
                 elif status == -1:
-                    profit = - (bet['amountPlaced'])
+                    profit = - int(bet['amountPlaced'])
                     return -1 , 0 
-    
-    # Did not find game
+                
+    print("Did not find game")
     return 0, 0
 
 def bet_status(bet_type,home_points,visitor_points,line):
@@ -66,7 +70,8 @@ def bet_status(bet_type,home_points,visitor_points,line):
 if __name__ == "__main__":
     userId = ObjectId('661ecb2a3587f557bb71755f')
     pending_bets = get_all_pending_bets(userId)
-    
+
+
     for pending_bet in pending_bets:
         status, profit = check_bet(pending_bet,userId)
         if status == 1:
@@ -76,9 +81,8 @@ if __name__ == "__main__":
             bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
 
             user = user_collection.find_one({'_id':userId})
-            old_balance = user['balance']
-            new_balance = user['balance'] + profit + pending_bet['amountPlaced']
-
+            old_balance = int(user['balance'])
+            new_balance = int(user['balance']) + profit 
             user_collection.update_one({"_id": userId}, {"$set": {"balance": new_balance}})
         elif status == -1:
             print("Lost bet")
@@ -89,3 +93,6 @@ if __name__ == "__main__":
             print("Bet still pending")
 
         time.sleep(5)
+
+    '2024-04-04'
+

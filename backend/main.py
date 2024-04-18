@@ -80,7 +80,7 @@ def check_login():
             'username': user['name']
         }
 
-        print('successful login')
+        print('successful login',user)
         return jsonify({"message": "Login successful", "user":user}), 200
     else:
         # Failed login
