@@ -8,32 +8,6 @@ const ProfileScreen = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            if (!userInfo) {
-                setError('User not logged in');
-                return;
-            }
-            setLoading(true);
-            try {
-                const response = await fetch(`http://127.0.0.1:5000/profile?email=${userInfo.email}`);
-                const data = await response.json();
-                if (response.ok) {
-                    setProfile(data);
-                } else {
-                    throw new Error(data.message || 'Failed to fetch profile data');
-                }
-            } catch (err) {
-                console.error('Fetch error:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfile();
-    }, [userInfo]);
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -49,11 +23,11 @@ const ProfileScreen = () => {
                     <Card>
                         <Card.Header>Profile Information</Card.Header>
                         <Card.Body>
-                            {profile.name ? (
+                            {userInfo ? (
                                 <>
-                                    <p><strong>Name:</strong> {profile.name}</p>
-                                    <p><strong>Email:</strong> {profile.email}</p>
-                                    <p><strong>Balance:</strong> ${profile.balance}</p>
+                                    <p><strong>Name:</strong> {userInfo.username}</p>
+                                    <p><strong>Email:</strong> {userInfo.email}</p>
+                                    <p><strong>Balance:</strong> ${userInfo.balance}</p>
                                 </>
                             ) : (
                                 <p>No profile data available.</p>

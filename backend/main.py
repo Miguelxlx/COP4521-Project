@@ -101,7 +101,9 @@ def check_login():
 
         user = {
             'id': str(user['_id']), 
-            'username': user['name']
+            'username': user['name'],
+            'email': user['email'],
+            'balance': user['balance']
         }
 
         print('successful login',user)
