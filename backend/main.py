@@ -1,29 +1,13 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from pymongo import MongoClient
+from flask import request, jsonify
 import bcrypt
 import datetime
 from config import app
 from odds import api_odds
 from odds_sample import get_odd_sample
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
 import bcrypt
 from bson import ObjectId
-import bet_logic
-
-
-MONGO_URI = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/test?retryWrites=true&w=majority"
-
-uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
-
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-db = client['bettingData']
-
-app = Flask(__name__)
-CORS(app)  # This enables CORS for all domains. Adjust as necessary for production.
+from bet_status import update_pending_bets
+from config import app, db
 
 def convert_objectid(obj):
     """Recursively convert ObjectId to string in nested documents."""
@@ -36,9 +20,9 @@ def convert_objectid(obj):
         obj = [convert_objectid(item) for item in obj]
     return obj
 
-
 @app.route("/odds", methods=["GET"])
 def get_odds():
+    # Retrieves a list of dictionaries containing odds information
     # odds, remaing_requests = api_odds()
     odds = get_odd_sample()
     return jsonify({"odds": odds})
@@ -46,6 +30,8 @@ def get_odds():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+
+    # Retrieve fields from POST request
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
@@ -59,7 +45,7 @@ def register():
     # Create hashed password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     
-    # Users Collection
+    # Create user entry en insert into db
     user = {
         "name": name,
         "email": email,
@@ -97,8 +83,10 @@ def get_profile():
 def check_login():
     data = request.get_json()
     user = db.users.find_one({"email": data['email']})
-    if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
 
+    # Checks if user exists and if password matches
+    if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+        # User info passed back to the frontend
         user = {
             'id': str(user['_id']), 
             'username': user['name']
@@ -130,9 +118,9 @@ def submit_transaction():
     data = request.get_json()
 
     user_id =  ObjectId(data['id'])
-
     transaction_amount = data['total']
     bet_slip = data['betSlip']
+
     time_placed = datetime.datetime.now()
 
     user = db.users.find_one({"_id": user_id})
@@ -140,9 +128,11 @@ def submit_transaction():
 
     if user and user_balance >= transaction_amount:
         bet_ids = []
+
+        # Insert all the bets into collection and retrieve their ids
         for bet in bet_slip:
-            print('bet')
-            wager = bet['type']
+            print(bet)
+            wager = bet['team']
             odds = 0
 
             if wager == 'Over':
@@ -169,6 +159,7 @@ def submit_transaction():
             entry = db.bets.insert_one(bet_entry)
             bet_ids.append(entry.inserted_id)
         
+        # Insert transaction into collection and add list of betIds
         transaction = {
             "userId" : user_id,
             "transactionTime" : time_placed,
@@ -178,20 +169,20 @@ def submit_transaction():
 
         db.transactions.insert_one(transaction)
     
+        # Update user balance
         db.users.update_one({"_id": user_id}, {"$set": {"balance": user_balance - transaction_amount}})
 
         return jsonify({"message": "Transaction Success"}), 200
     else:
-        # Failed login
         return jsonify({"message": "Transaction Failed"}), 403
 
 @app.route('/check_pending_bets', methods=['POST'])
 def checkPendingBets():
+    print("CheckPedning")
     data = request.get_json()
-    bet_logic.checkPendingBets(ObjectId(data['id']))
+    update_pending_bets(ObjectId(data['id']))
 
     return jsonify({"message": "Update Successful"}), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
