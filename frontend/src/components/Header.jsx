@@ -35,7 +35,7 @@ export const Header = () => {
                         </Nav>
                         <Nav>
                             {userInfo ? (
-                                <NavDropdown title={userInfo.name} id='username-dropdown'>
+                                <NavDropdown title={userInfo.username} id='username-dropdown'>
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Profile</NavDropdown.Item>
                                     </LinkContainer>
