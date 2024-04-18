@@ -45,11 +45,18 @@ function App() {
 
   const handleSubmitBetSlip = async () => {
     if (!userInfo) {
-      alert("You must be logged in to place bets.");
-      // Alternatively, redirect to login page:
-      // navigate('/login');
-      return;
+        alert("You must be logged in to place bets.");
+        // Alternatively, redirect to login page:
+        // navigate('/login');
+        return;
     }
+
+    // Check if there are any bets in the bet slip
+    if (betSlip.length === 0) {
+        setMessage("Please add at least one bet to your slip before submitting.");
+        return;
+    }
+
     const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
     console.log(userInfo.id)
 
@@ -59,22 +66,29 @@ function App() {
       betSlip: betSlip
     };
 
-    const response = await fetch('http://127.0.0.1:5000/submit_transaction', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(transactionData), // Send each bet details
-    });
+    try {
+        const response = await fetch('http://127.0.0.1:5000/submit_transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(transactionData), // Send each bet details
+        });
 
-    if(!response.ok){
-      // setMessage('Insufficient Balance');
-      throw new Error('Failed to submit bet slip');
+        if(!response.ok) {
+          const errorData = await response.json();
+          setMessage(errorData.message || 'Failed to submit bet slip');
+          return;
+        }
+        
+        console.log("All bets submitted successfully");
+        setBetSlip([]); // Optionally clear bet slip on successful submission
+        setMessage("Bet slip submitted successfully!");
+    } catch (error) {
+        console.error("Error submitting bet slip:", error);
+        setMessage("Failed to submit bet slip: " + error.message);
     }
-    else{
-      console.log("All bets submitted successfully")
-    }
-  };
+};
 
   const handleRemoveBet = (index) => {
     // Create a new array excluding the bet at the provided index
