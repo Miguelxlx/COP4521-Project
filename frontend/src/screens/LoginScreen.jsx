@@ -46,12 +46,21 @@ const LoginScreen = () => {
             if (response.ok) {
                 setModalMessage('Login successful');
                 setShowModal(true);
-                dispatch(setCredentials({user: data.user}));
-                
+                dispatch(setCredentials(data.user));
+
+                fetch('http://127.0.0.1:5000/check_pending_bets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: data.user.id }),
+                });
+
                 setTimeout(() => {
                     handleCloseModal();
                     navigate(redirect);
                 }, 2000);
+
             } else {
                 setModalMessage(data.message || 'Login failed');
                 setShowModal(true);

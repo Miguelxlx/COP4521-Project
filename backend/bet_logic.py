@@ -66,11 +66,10 @@ def bet_status(bet_type,home_points,visitor_points,line):
         return 1
     else:
         return -1
-    
-if __name__ == "__main__":
-    userId = ObjectId('661ecb2a3587f557bb71755f')
-    pending_bets = get_all_pending_bets(userId)
 
+def checkPendingBets(userId):
+    print('Check pending bets')
+    pending_bets = get_all_pending_bets(userId)
 
     for pending_bet in pending_bets:
         status, profit = check_bet(pending_bet,userId)
@@ -81,7 +80,6 @@ if __name__ == "__main__":
             bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
 
             user = user_collection.find_one({'_id':userId})
-            old_balance = int(user['balance'])
             new_balance = int(user['balance']) + profit 
             user_collection.update_one({"_id": userId}, {"$set": {"balance": new_balance}})
         elif status == -1:
@@ -94,5 +92,9 @@ if __name__ == "__main__":
 
         time.sleep(5)
 
-    '2024-04-04'
+
+
+if __name__ == "__main__":
+    userId = ObjectId('661ecb2a3587f557bb71755f')
+    checkPendingBets(userId)
 

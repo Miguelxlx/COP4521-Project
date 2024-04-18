@@ -21,6 +21,7 @@ function App() {
       const response = await fetch("http://127.0.0.1:5000/odds");
       const data = await response.json();
       console.log(data.remaining_requests); 
+      setOdds(data.odds)
     } catch (error) {
       console.error("Error fetching odds:", error);
     }
@@ -50,10 +51,10 @@ function App() {
       return;
     }
     const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
-    console.log(userInfo.user.id)
+    console.log(userInfo.id)
 
     const transactionData = {
-      id: userInfo.user.id,
+      id: userInfo.id,
       total: totalBetAmount,
       betSlip: betSlip
     };

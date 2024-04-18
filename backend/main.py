@@ -10,6 +10,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import bcrypt
 from bson import ObjectId
+import bet_logic
 
 
 MONGO_URI = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/test?retryWrites=true&w=majority"
@@ -181,6 +182,13 @@ def submit_transaction():
     else:
         # Failed login
         return jsonify({"message": "Transaction Failed"}), 403
+
+@app.route('/check_pending_bets', methods=['POST'])
+def checkPendingBets():
+    data = request.get_json()
+    bet_logic.checkPendingBets(ObjectId(data['id']))
+
+    return jsonify({"message": "Update Successful"}), 200
 
 
 if __name__ == '__main__':
