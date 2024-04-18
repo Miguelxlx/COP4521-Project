@@ -101,9 +101,7 @@ def check_login():
 
         user = {
             'id': str(user['_id']), 
-            'username': user['name'],
-            'email': user['email'],
-            'balance': user['balance']
+            'username': user['name']
         }
 
         print('successful login',user)
@@ -125,7 +123,6 @@ def get_transactions():
     transactions = db.transactions.find({"userId": ObjectId(user_id)})
     transaction_list = [convert_objectid(transaction) for transaction in transactions]  # Convert cursor to list
     return jsonify({"transactions": transaction_list})
-
 
 
 @app.route('/submit_transaction', methods=['POST'])

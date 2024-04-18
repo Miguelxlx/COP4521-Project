@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
   const [odds, setOdds] = useState([]);
@@ -38,6 +39,21 @@ function App() {
   };
 
   const addToBetSlip = (odd, index) => {
+    //check if user is loged in navigate to login page
+    if (!userInfo) {
+      alert("You must be logged in to place bets.");
+      return;
+    }
+      
+
+    if (!betDetails[index]?.amount || !betDetails[index]?.type || !betDetails[index]?.team) {
+      setMessage("Please complete all bet details.");
+      return;
+    }
+    if (betDetails[index]?.amount < 1) {
+      setMessage("Minimum bet amount is $1.");
+      return;
+    }
     const details = betDetails[index] || {};
     const bet = { ...odd, ...details };
     setBetSlip(current => [...current, bet]);
@@ -48,6 +64,10 @@ function App() {
       alert("You must be logged in to place bets.");
       // Alternatively, redirect to login page:
       // navigate('/login');
+      return;
+    }
+    if (betSlip.length === 0) {
+      setMessage("Please add bets to your bet slip.");
       return;
     }
     const totalBetAmount = betSlip.reduce((acc, bet) => acc + parseFloat(bet.amount || 0), 0);
@@ -70,9 +90,12 @@ function App() {
     if(!response.ok){
       // setMessage('Insufficient Balance');
       throw new Error('Failed to submit bet slip');
+      
     }
     else{
       console.log("All bets submitted successfully")
+      setBetSlip([]); // Clear the bet slip
+      setMessage("Bet submitted successfully! Your balance has been updated.");
     }
   };
 
