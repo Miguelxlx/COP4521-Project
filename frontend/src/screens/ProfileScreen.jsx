@@ -16,7 +16,7 @@ const ProfileScreen = () => {
             }
             setLoading(true);
             try {
-                const response = await fetch(`http://127.0.0.1:5000/profile?user_id=${userInfo.id}`);
+                const response = await fetch(`http://127.0.0.1:5000/profile?email=${userInfo.email}`);
                 const data = await response.json();
                 if (response.ok) {
                     setProfile(data);

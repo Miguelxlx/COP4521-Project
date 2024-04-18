@@ -70,26 +70,26 @@ def register():
     db.users.insert_one(user)
     return jsonify({'valid': True, 'message': 'Registration valid!'})  
 
-# @app.route('/profile', methods=['GET']) 
-# def get_profile():
+@app.route('/profile', methods=['GET']) 
+def get_profile():
 
-#     data = request.get_json()
-#     name = data.get('name')
-#     email = data.get('email')
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
 
-#     # Fetch user details from the database
-#     user = db['users'].find_one({"email": email})
-#     if user:
-#         # Remove sensitive data before sending it to the client
-#         user.pop('password', None)  # Remove password if it's stored in the user document
-#         user_data = {
-#             'name': user.get('name', ''),
-#             'email': user.get('email', ''),
-#             'balance': user.get('balance', 0.0)
-#         }
-#         return jsonify(user_data), 200
-#     else:
-#         return jsonify({'message': 'User not found'}), 404
+    # Fetch user details from the database
+    user = db['users'].find_one({"email": email})
+    if user:
+        # Remove sensitive data before sending it to the client
+        user.pop('password', None)  # Remove password if it's stored in the user document
+        user_data = {
+            'name': user.get('name', ''),
+            'email': user.get('email', ''),
+            'balance': user.get('balance', 0.0)
+        }
+        return jsonify(user_data), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 
     
 @app.route('/check_login', methods=['POST'])
