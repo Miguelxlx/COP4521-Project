@@ -187,7 +187,8 @@ def submit_transaction():
             'id': str(user['_id']), 
             'username': user['name'],
             'email' : user['email'],
-            'balance' : user_balance - transaction_amount
+            'balance' : user_balance - transaction_amount,
+            'role' : user['role']
         }
 
         return jsonify({"message": "Transaction Success", "user":user}), 200
