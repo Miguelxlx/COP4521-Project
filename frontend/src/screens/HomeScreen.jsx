@@ -93,6 +93,7 @@ function App() {
       
     }
     else{
+      // userInfo.balance = userInfo.balance - totalBetAmount;
       console.log("All bets submitted successfully")
       setBetSlip([]); // Clear the bet slip
       setMessage("Bet submitted successfully! Your balance has been updated.");

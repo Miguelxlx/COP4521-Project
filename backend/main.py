@@ -89,8 +89,11 @@ def check_login():
         # User info passed back to the frontend
         user = {
             'id': str(user['_id']), 
-            'username': user['name']
+            'username': user['name'],
+            'balance' : user['balance']
         }
+
+        print(user)
 
         print('successful login',user)
         return jsonify({"message": "Login successful", "user":user}), 200
