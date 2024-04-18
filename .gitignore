@@ -23,3 +23,9 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+backend/__pycache__/config.cpython-312.pyc
+*.pyc
+*.pyc
+*.pyc
+backend/__pycache__/results.cpython-312.pyc
+backend/__pycache__/odds_sample.cpython-312.pyc

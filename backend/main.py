@@ -119,9 +119,12 @@ def check_login():
 
 @app.route('/transactions', methods=['GET'])
 def get_transactions():
-    transactions = db.transactions.find()
-    transaction_list = [convert_objectid(transaction) for transaction in transactions]
+    user_id = request.args.get('user_id')  # Expect user ID as a query parameter
+    transactions = db.transactions.find({"userId": ObjectId(user_id)})
+    transaction_list = [convert_objectid(transaction) for transaction in transactions]  # Convert cursor to list
     return jsonify({"transactions": transaction_list})
+
+
 
 @app.route('/submit_transaction', methods=['POST'])
 def submit_transaction():
