@@ -47,7 +47,7 @@ const LoginScreen = () => {
                 setModalMessage('Login successful');
                 console.log(data)
                 setShowModal(true);
-                dispatch(setCredentials(data.userId));
+                dispatch(setCredentials({user: data}));
                 
                 setTimeout(() => {
                     handleCloseModal();
