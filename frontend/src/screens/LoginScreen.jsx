@@ -46,8 +46,9 @@ const LoginScreen = () => {
             if (response.ok) {
                 setModalMessage('Login successful');
                 setShowModal(true);
+                //check data.user
+                console.log(data.user);
                 dispatch(setCredentials(data.user));
-                console.log(data.user)
 
                 fetch('http://127.0.0.1:5000/check_pending_bets', {
                     method: 'POST',

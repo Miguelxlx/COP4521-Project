@@ -101,6 +101,12 @@ def check_login():
     else:
         # Failed login
         return jsonify({"message": "Invalid email or password"}), 403
+    
+@app.route('/bets', methods=['GET'])
+def get_bets():
+    bets = db.bets.find()
+    bets_list = [convert_objectid(bet) for bet in bets]
+    return jsonify({"bets": bets_list})
 
 # @app.route('/transactions', methods=['GET'])
 # def get_transactions():

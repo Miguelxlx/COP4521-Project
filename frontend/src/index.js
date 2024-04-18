@@ -21,6 +21,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import TransactionScreen from './screens/TransactionScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import UserListScreen from './screens/UserListScreen';
+import BetScreen from './screens/BetScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,9 +32,9 @@ const router = createBrowserRouter(
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/transactions" element={<TransactionScreen />} />
       <Route path="/profile" element={<ProfileScreen />} />
-
+      <Route path="/bets" element={<BetScreen/>} />
       <Route path='' element={<AdminRoute />}>
-        <Route path='/admin/userlist' element={<UserListScreen />} />
+      <Route path='/admin/userlist' element={<UserListScreen />} />
       </Route>
     </Route>
   )

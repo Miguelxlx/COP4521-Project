@@ -42,13 +42,11 @@ def check_bet_status(bet):
                 status = get_bet_result(bet['wager'], game['home_points'],game['visitor_points'],bet['line'])
 
                 if status == 1:
-                    print("amountPlaced:",int(bet['amountPlaced']))
-                    print("Odds:",int(bet['odds']))
-                    profit = (int(bet['amountPlaced']) * int(bet['odds']))
+                    profit = (float(bet['amountPlaced']) * float(bet['odds']))
                     print('Profit: ',profit)
                     return 1, profit
                 elif status == -1:
-                    profit = - int(bet['amountPlaced'])
+                    profit = - float(bet['amountPlaced'])
                     return -1 , 0 
                 
     print("Did not find game")

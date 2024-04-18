@@ -32,6 +32,9 @@ export const Header = () => {
                             <LinkContainer to='/transactions'>
                                 <Nav.Link><FaExchangeAlt /> Transactions</Nav.Link>
                             </LinkContainer>                    
+                            <LinkContainer to='/bets'>
+                                <Nav.Link><FaShoppingCart /> Bets</Nav.Link>
+                            </LinkContainer>
                         </Nav>
                         <Nav>
                             {userInfo ? (
