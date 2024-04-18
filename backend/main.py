@@ -127,10 +127,10 @@ def submit_transaction():
     data = request.get_json()
 
     user_id =  ObjectId(data['id'])
+
     transaction_amount = data['total']
     bet_slip = data['betSlip']
     time_placed = datetime.datetime.now()
-    print(bet_slip)
 
     user = db.users.find_one({"_id": user_id})
     user_balance = user['balance']
@@ -139,7 +139,7 @@ def submit_transaction():
         bet_ids = []
         for bet in bet_slip:
             print('bet')
-            wager = bet['team']
+            wager = bet['type']
             odds = 0
 
             if wager == 'Over':
@@ -164,10 +164,8 @@ def submit_transaction():
             }
 
             entry = db.bets.insert_one(bet_entry)
-            print('inserted bet')
             bet_ids.append(entry.inserted_id)
         
-        print('transaction')
         transaction = {
             "userId" : user_id,
             "transactionTime" : time_placed,
@@ -176,12 +174,8 @@ def submit_transaction():
         }
 
         db.transactions.insert_one(transaction)
-
-        print('inserted transaction')
     
         db.users.update_one({"_id": user_id}, {"$set": {"balance": user_balance - transaction_amount}})
-
-        print('updated user')
 
         return jsonify({"message": "Transaction Success"}), 200
     else:
