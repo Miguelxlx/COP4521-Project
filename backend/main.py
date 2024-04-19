@@ -8,6 +8,7 @@ import bcrypt
 from bson import ObjectId
 from bet_status import update_pending_bets
 from config import app, db
+from flask import session
 
 def convert_objectid(obj):
     """Recursively convert ObjectId to string in nested documents."""
@@ -202,6 +203,22 @@ def checkPendingBets():
     update_pending_bets(ObjectId(data['id']))
 
     return jsonify({"message": "Update Successful"}), 200
+
+@app.route('/update_balance', methods=['POST'])
+def update_balance():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Not authenticated'}), 401
+
+    data = request.get_json()
+    user_id = session['user_id']  # Get user ID from session
+    new_balance = data['newBalance']
+
+    user = db.users.find_one({"_id": ObjectId(user_id)})
+    if user:
+        db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"balance": new_balance}})
+        return jsonify({"message": "Balance updated successfully"}), 200
+    else:
+        return jsonify({"message": "User not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,12 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Container, Row, Col, Card, Alert } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Container, Row, Col, Card, Alert, Button, Form } from 'react-bootstrap';
 
 const ProfileScreen = () => {
     const userInfo = useSelector(state => state.auth.userInfo);
+    const dispatch = useDispatch();  // Use dispatch if you're updating the redux store
+
     const [profile, setProfile] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [amount, setAmount] = useState(0);  // State to store the amount to be added
+
+    const handleAddBalance = async () => {
+        if (!amount || amount <= 0) {
+            setError('Please enter a valid amount.');
+            return;
+        }
+        const newBalance = parseFloat(userInfo.balance) + parseFloat(amount);
+    
+        try {
+            const response = await fetch('http://127.0.0.1:5000/update_balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',  // Ensure cookies are included with the request
+                body: JSON.stringify({
+                    newBalance: newBalance
+                }),
+            });
+    
+            if (response.ok) {
+                dispatch(updateUserBalance(newBalance));
+                setError('');
+                alert('Balance updated successfully!');
+            } else {
+                const errorData = await response.json();
+                setError(errorData.message);
+            }
+        } catch (err) {
+            setError('Failed to update balance due to server error.');
+        }
+    };
+    
 
     if (loading) {
         return <div>Loading...</div>;
@@ -28,6 +64,20 @@ const ProfileScreen = () => {
                                     <p><strong>Name:</strong> {userInfo.username}</p>
                                     <p><strong>Email:</strong> {userInfo.email}</p>
                                     <p><strong>Balance:</strong> ${userInfo.balance}</p>
+                                    <Form>
+                                        <Form.Group>
+                                            <Form.Label>Add to Balance:</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                placeholder="Enter amount"
+                                                value={amount}
+                                                onChange={(e) => setAmount(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                        <Button variant="primary" onClick={handleAddBalance}>
+                                            Add Balance
+                                        </Button>
+                                    </Form>
                                 </>
                             ) : (
                                 <p>No profile data available.</p>
