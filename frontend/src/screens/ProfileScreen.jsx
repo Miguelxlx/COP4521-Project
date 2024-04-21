@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Card, Alert, Button, Form } from 'react-bootstrap';
+import { setCredentials } from '../slices/authSlice';
 
 const ProfileScreen = () => {
     const userInfo = useSelector(state => state.auth.userInfo);
@@ -8,38 +9,44 @@ const ProfileScreen = () => {
 
     const [profile, setProfile] = useState({});
     const [loading, setLoading] = useState(false);
+
     const [error, setError] = useState('');
     const [amount, setAmount] = useState(0);  // State to store the amount to be added
 
+    //const [updateUserBalance, { isLoading }] = useUpdateUserBalanceMutation()
     const handleAddBalance = async () => {
         if (!amount || amount <= 0) {
             setError('Please enter a valid amount.');
             return;
         }
+        setLoading(true)
         const newBalance = parseFloat(userInfo.balance) + parseFloat(amount);
-    
         try {
             const response = await fetch('http://127.0.0.1:5000/update_balance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',  // Ensure cookies are included with the request
                 body: JSON.stringify({
+                    id: userInfo.id,
                     newBalance: newBalance
                 }),
             });
-    
+            const data = await response.json();
             if (response.ok) {
-                dispatch(updateUserBalance(newBalance));
+                dispatch(setCredentials(data.user));
+                console.log(data.user)
+                console.log("Balance updated successfully")
                 setError('');
                 alert('Balance updated successfully!');
             } else {
-                const errorData = await response.json();
-                setError(errorData.message);
+                //const errorData = await response.json();
+                setError(data.message);
             }
         } catch (err) {
-            setError('Failed to update balance due to server error.');
+            setError(err);
+        } finally {
+            setLoading(false);
         }
     };
     

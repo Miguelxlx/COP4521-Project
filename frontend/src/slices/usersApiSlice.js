@@ -56,7 +56,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
             invalidatesTags: ['Users'],
-        })
+        }),
     }),
 });
 

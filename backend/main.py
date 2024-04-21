@@ -4,7 +4,6 @@ import datetime
 from config import app
 from odds import api_odds
 from odds_sample import get_odd_sample
-import bcrypt
 from bson import ObjectId
 from bet_status import update_pending_bets
 from config import app, db
@@ -206,19 +205,30 @@ def checkPendingBets():
 
 @app.route('/update_balance', methods=['POST'])
 def update_balance():
-    if 'user_id' not in session:
-        return jsonify({'message': 'Not authenticated'}), 401
-
     data = request.get_json()
-    user_id = session['user_id']  # Get user ID from session
+    user_id = ObjectId(data['id'])
     new_balance = data['newBalance']
 
-    user = db.users.find_one({"_id": ObjectId(user_id)})
-    if user:
-        db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"balance": new_balance}})
-        return jsonify({"message": "Balance updated successfully"}), 200
-    else:
-        return jsonify({"message": "User not found"}), 404
+    if not user_id or not new_balance:
+        return jsonify({"message": "Invalid request, missing user_id or newBalance"}), 400
+
+    try:
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+        if user:
+            db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"balance": new_balance}}), 400
+            user = {
+                'id': str(user['_id']),
+                'username': user['name'],
+                'email' : user['email'],
+                'balance' : new_balance,
+                'role' : user['role']
+            }
+            return jsonify({"message": "Balance updated successfully", "user":user}), 200
+        else:
+            return jsonify({"message": "User not found"}), 404
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "AM error occurred while updating balance"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
