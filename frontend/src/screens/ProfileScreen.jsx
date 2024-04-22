@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Card, Alert, Button, Form } from 'react-bootstrap';
 import { setCredentials } from '../slices/authSlice';
+import { LinkContainer } from 'react-router-bootstrap';
 
 const ProfileScreen = () => {
     const userInfo = useSelector(state => state.auth.userInfo);
@@ -132,7 +133,11 @@ const ProfileScreen = () => {
             </Row>
             <Col>
                 Premium User info goes here:
-                
+                {userInfo.role === 'premium' && (
+                    <Container>
+                        Win-Loss History will go here:
+                    </Container>
+                )}
             </Col>
             
         </Container>
