@@ -93,6 +93,9 @@ const ProfileScreen = () => {
                     </Card>
                 </Col>
             </Row>
+            <Col>
+                Premium User info goes here:
+            </Col>
         </Container>
     );
 };
