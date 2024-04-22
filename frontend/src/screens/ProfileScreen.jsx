@@ -126,9 +126,9 @@ const ProfileScreen = () => {
                             )}
                         </Card.Body>
                     </Card>
-                    <Button variant="primary" onClick={handleUpgradePremium}>
+                    {userInfo.role != "premium" ? (<Button variant="primary" onClick={handleUpgradePremium}>
                         Upgrade to Premium for $15
-                    </Button>
+                    </Button>) : (<p></p>)}
                 </Col>
             </Row>
             <Col>
