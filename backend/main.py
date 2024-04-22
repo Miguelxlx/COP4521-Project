@@ -6,7 +6,7 @@ from odds import api_odds
 from odds_sample import get_odd_sample
 from bson import ObjectId
 from bet_status import update_pending_bets
-from config import app, db
+from config import app, db, logos
 from flask import session
 
 def convert_objectid(obj):
@@ -25,7 +25,13 @@ def get_odds():
     # Retrieves a list of dictionaries containing odds information
     # odds, remaing_requests = api_odds()
     odds = get_odd_sample()
-    return jsonify({"odds": odds})
+    odds_and_logos = []
+    for odd in odds:
+        odd['home_img'] = logos[odd['home_team']]
+        odd['visitor_img'] = logos[odd['visitor_team']]
+        odds_and_logos.append(odd)
+    
+    return jsonify({"odds": odds_and_logos})
 
 @app.route('/register', methods=['POST'])
 def register():

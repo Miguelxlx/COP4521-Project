@@ -121,7 +121,7 @@ function App() {
         ) : (
           odds.map((odd, index) => (
             <div key={index} style={{ marginBottom: '20px' }}>
-              <h3>{odd.home_team} ({odd.h2h_home_price}) vs. {odd.visitor_team} ({odd.h2h_visitor_price}) </h3>
+              <h3>{odd.home_team} <img src={odd.home_img}></img>({odd.h2h_home_price}) vs. {odd.visitor_team} ({odd.h2h_visitor_price}) <img src={odd.visitor_img}></img> </h3>
               <h4>Over: {odd.over_price} Under: {odd.under_price}</h4>
               <h5>Line: {odd.line}</h5>
               <select

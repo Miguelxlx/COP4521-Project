@@ -1,16 +1,32 @@
 import requests
+import json
+
+url = "https://api-nba-v1.p.rapidapi.com/games"
+
+headers= {
+    "X-RapidAPI-Key": "b32a2e36fbmshd22362ae58d4d2fp142d89jsnfd4f85576b32",
+    "X-RapidAPI-Host": "api-nba-v1.p.rapidapi.com"
+    }
+
+
+def get_logos():
+    querystring = {"season":"2022"}
+    response = requests.get(url, headers=headers, params=querystring)
+    nba_json = response.json()
+
+    team_logos = {}
+    for team in nba_json['response']:
+        team_name = team['teams']['home']['name']
+        logo = team['teams']['home']['logo']
+        team_logos[team_name] = logo
+
+
+    with open("logos/logos.json", 'w') as json_file:
+        json.dump(team_logos, json_file)
 
 # date has to be in the format 'YYYY-MM-DD'
 def get_results(date):
-    url = "https://api-nba-v1.p.rapidapi.com/games"
-
     querystring = {"date":date}
-
-    headers = {
-        "X-RapidAPI-Key": "b32a2e36fbmshd22362ae58d4d2fp142d89jsnfd4f85576b32",
-        "X-RapidAPI-Host": "api-nba-v1.p.rapidapi.com"
-    }
-
     response = requests.get(url, headers=headers, params=querystring)
     nba_json = response.json()
 
@@ -30,5 +46,7 @@ def get_results(date):
     return results
 
 if __name__ == "__main__":
-    results = get_results('2024-04-04')
-    print(results)
+    # results = get_results('2024-04-04')
+    # print(results)
+
+    get_logos()
