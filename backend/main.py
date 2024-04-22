@@ -215,7 +215,7 @@ def update_balance():
     try:
         user = db.users.find_one({"_id": ObjectId(user_id)})
         if user:
-            db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"balance": new_balance}}), 400
+            db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"balance": new_balance}})
             user = {
                 'id': str(user['_id']),
                 'username': user['name'],
@@ -228,7 +228,32 @@ def update_balance():
             return jsonify({"message": "User not found"}), 404
     except Exception as e:
         print(e)
-        return jsonify({"message": "AM error occurred while updating balance"}), 500
+        return jsonify({"message": "An error occurred while updating balance"}), 500
+
+@app.route('/upgrade_premium', methods=['POST'])
+def upgrade_premium():
+    data = request.get_json()
+    user_id = ObjectId(data['id'])
+
+    if not user_id:
+        return jsonify({"message": "Invalid request, missing user_id"}), 400
+    try:
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+        if user:
+            db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"role": "premium"}})
+            user = {
+                'id': str(user['_id']),
+                'username': user['name'],
+                'email' : user['email'],
+                'balance' : user['balance'] - 15,
+                'role' : "premium"
+            }
+            return jsonify({"message": "Upgraded to premium successfully", "user":user}), 200
+        else:
+            return jsonify({"message": "User not found"}), 404
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "An error occurred while upgrading to premium"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

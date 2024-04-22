@@ -50,6 +50,38 @@ const ProfileScreen = () => {
         }
     };
     
+    const handleUpgradePremium = async () => {
+        if(userInfo.balance < 15){
+            setError("Not enough in balance to upgrade to Premium.");
+        }
+        setLoading(true);
+        try {
+            const response = await fetch('http://127.0.0.1:5000/upgrade_premium', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: userInfo.id,
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                dispatch(setCredentials(data.user));
+                console.log(data.user)
+                console.log("Upgraded to premium successfully")
+                setError('');
+                alert('Upgraded to Premium!');
+            } else {
+                //const errorData = await response.json();
+                setError(data.message);
+            }
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -84,18 +116,25 @@ const ProfileScreen = () => {
                                         <Button variant="primary" onClick={handleAddBalance}>
                                             Add Balance
                                         </Button>
+                                        
                                     </Form>
+                                    
                                 </>
                             ) : (
                                 <p>No profile data available.</p>
                             )}
                         </Card.Body>
                     </Card>
+                    <Button variant="primary" onClick={handleUpgradePremium}>
+                        Upgrade to Premium for $15
+                    </Button>
                 </Col>
             </Row>
             <Col>
                 Premium User info goes here:
+                
             </Col>
+            
         </Container>
     );
 };
