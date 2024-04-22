@@ -77,8 +77,7 @@ def get_profile():
         return jsonify(user_data), 200
     else:
         return jsonify({'message': 'User not found'}), 404
-
-    
+   
 @app.route('/check_login', methods=['POST'])
 def check_login():
     data = request.get_json()
@@ -105,9 +104,20 @@ def check_login():
     
 @app.route('/bets', methods=['GET'])
 def get_bets():
-    bets = db.bets.find()
-    bets_list = [convert_objectid(bet) for bet in bets]
-    return jsonify({"bets": bets_list})
+    user_id = request.args.get('user_id') 
+
+    # Find all transactions with user id
+    transactions = db.transactions.find({"userId": ObjectId(user_id)})
+
+    # Get all the bet ids associated with transactions
+    bet_ids = []
+    for transaction in transactions:
+        bet_ids.extend(transaction['betIds'])
+
+    bets = [convert_objectid(db.bets.find_one({"_id": id})) for id in bet_ids]
+
+    return jsonify({"bets": bets})
+
 
 # @app.route('/transactions', methods=['GET'])
 # def get_transactions():
@@ -120,7 +130,8 @@ def get_bets():
 def get_transactions():
     user_id = request.args.get('user_id')  # Expect user ID as a query parameter
     transactions = db.transactions.find({"userId": ObjectId(user_id)})
-    transaction_list = [convert_objectid(transaction) for transaction in transactions]  # Convert cursor to list
+    transaction_list = [convert_objectid(transaction) for transaction in transactions]
+
     return jsonify({"transactions": transaction_list})
 
 
