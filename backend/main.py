@@ -91,7 +91,8 @@ def check_login():
             'id': str(user['_id']), 
             'username': user['name'],
             'email' : user['email'],
-            'balance' : user['balance']
+            'balance' : user['balance'],
+            'role' : user['role']
         }
 
         print(user)
@@ -254,6 +255,10 @@ def upgrade_premium():
     except Exception as e:
         print(e)
         return jsonify({"message": "An error occurred while upgrading to premium"}), 500
+
+"""
+bet_entry
+"""
 
 if __name__ == '__main__':
     app.run(debug=True)
