@@ -273,9 +273,29 @@ def upgrade_premium():
         print(e)
         return jsonify({"message": "An error occurred while upgrading to premium"}), 500
 
-"""
-bet_entry
-"""
+@app.route('/user_list', methods=['GET'])
+def get_users():
+    users = db.users.find()
+    user_list = [convert_objectid(user) for user in users]
+
+    return jsonify({"users": user_list})
+
+@app.route('/delete_user', methods=['DELETE'])
+def delete_user():
+    data = request.get_json()
+    user_id = ObjectId(data['id'])
+
+    if not user_id:
+        return jsonify({"message": "Invalid request, missing user_id"}), 400
+    try:
+        result = db.users.delete_one({"_id": user_id})
+        if result.deleted_count > 0:
+            return jsonify({"message": "User deleted successfully"}), 200
+        else:
+            return jsonify({"message": "No user found with provided ID"}), 404
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

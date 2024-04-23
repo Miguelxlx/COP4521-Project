@@ -3,33 +3,68 @@ import { Table, Button } from "react-bootstrap"
 import { FaTimes, FaEdit, FaCheck, FaTrash } from "react-icons/fa"
 import Message from "../components/Message"
 import Loader from "../components/Loader"
-import { useGetUsersQuery, useDeleteUserMutation } from "../slices/usersApiSlice"
-import { Link } from "react-router-dom"
+//import { useGetUsersQuery, useDeleteUserMutation } from "../slices/usersApiSlice"
+//import { Link } from "react-router-dom"
 import { toast } from 'react-toastify'
+import { useEffect, useState } from "react"
+//import { useSelector } from 'react-redux'
 const UserListScreen = () => {
+    const [users, setUsers] = useState([]);
+    //const userInfo = useSelector(state => state.auth.userInfo);
 
-    const { data: users, refetch, isLoading, error } = useGetUsersQuery();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("http://127.0.0.1:5000/user_list");
+            const data = await response.json();
+            if (response.ok) {
+                setUsers(data.users);
+            } else {
+                console.error("Failed to fetch users");
+                setError(data.message)
+            }
+        } catch (error) {
+            console.error("Error fetching users list:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    
     const deleteHandler = async (id) => {
         if(window.confirm('Are you sure?')) { 
             try {
-            await deleteUser(id);
-            toast.success('User deleted')
-            refetch();
-        } catch (err) {
-            toast.error(err?.data?.message || err.error);
-        }}
+            const response = await fetch("http://127.0.0.1:5000/delete_user", {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id }),
+            });
+            //const data = await response.json()
+            if (response.ok) {
+                toast.success('User deleted')
+                fetchUsers();
+            }
+            } catch (err) {
+                toast.error(err?.data?.message || err.error);
+            }
     }
-    
+    }
+
   return (
     <>
     <h1>Users</h1>
-    {loadingDelete && <Loader />}
-    {isLoading ? <Loader /> : error ? <Message variant='danger'>{error}
+    {loading ? <Loader /> : error ? <Message variant='danger'>{error}
     </Message> : (
         <Table striped hover responsive className='table-sm'>
+
             <thead>
                 <tr>
                     <th>ID</th>
@@ -46,7 +81,7 @@ const UserListScreen = () => {
                         <td>{user.name}</td>
                         <td><a href={`mailto:${user.email}`}>{ user.email }</a></td>
                         <td>
-                        { user.isAdmin ? (
+                        { user.role === 'admin' ? (
                             <FaCheck style={{ color: 'green' }} />
                         ) : (
                             <FaTimes style={{ color: 'red' }} />
