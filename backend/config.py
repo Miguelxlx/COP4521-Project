@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import json
+import os
 
 uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
 
@@ -17,5 +18,7 @@ CORS(app)  # This enables CORS for all domains. Adjust as necessary for producti
 
 
 logos = None
-with open('logos/logos.json', 'r') as file:
+curr_dir = os.path.dirname(__file__)
+file_path = os.path.join(curr_dir, 'logos', 'logos.json')
+with open(file_path, 'r') as file:
     logos = json.load(file)
