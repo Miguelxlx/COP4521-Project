@@ -3,7 +3,6 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from results import get_logos
 import json
 import os
 
@@ -18,8 +17,9 @@ db = client['bettingData']
 app = Flask(__name__)
 CORS(app)  # This enables CORS for all domains
 
+
 logos = None
 curr_dir = os.path.dirname(__file__)
-file_path = os.path.join(curr_dir,'logos.json')
+file_path = os.path.join(curr_dir, 'logos', 'logos.json')
 with open(file_path, 'r') as file:
     logos = json.load(file)
