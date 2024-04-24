@@ -6,12 +6,29 @@
 - **Jared Braswell**
 - **Drake Phousirith**
 
+
+## Project Description
+The goal of this application is to create a basketball wagering app in which users can track their sports betting performance without using real money. The app offers bets on daily NBA games offering wagers on the head-to-head or over/under. The app keeps track of all transactions placed and refreshes regularly to check the bets placed against the outcome of the games. Users also have the option to upgrade their account to premium to get visual analytics on their profits over time.
+
+## How to Use
+
+
 ## How to Compile and Execute
 ### Requirements
-- **ADD REQUIREMENTS SUCH AS LIBRARIES, DEPENDENCIES, ETC.**
+- **LIBRARIES**
+Backend
 - Flask
+- flask_cors
 - pymongo
+- json
+- os
+- bcrypt
+- datetime
+- requests
+
+Frontend
 - npm
+
 
 ### Initial Setup
 **STEPS FOR SETUP GO HERE** such as "clone the git repository" and ```npm install react-scripts```
@@ -36,3 +53,14 @@ This will start the web application. (Drake: For me it doesn't show on localhost
 
 ## Bugs
 - **Document known bugs here if there are any**
+
+
+## Separation of Work
+
+- **Osher Steel**
+    - API logic for the odds and nba apis
+    - Route functions for the frontend 
+- **Miguel Montesinos**
+- **Jared Braswell**
+- **Drake Phousirith**
+
