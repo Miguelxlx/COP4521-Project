@@ -15,8 +15,7 @@ The goal of this application is to create a basketball wagering app in which use
 
 ## How to Compile and Execute
 ### Requirements
-- **LIBRARIES**
-Backend: Ensure these Python3 libraries are installed using pip.
+**Backend**: Ensure these Python3 libraries are installed using pip.
 - Flask
 - flask_cors
 - pymongo
@@ -27,21 +26,20 @@ Backend: Ensure these Python3 libraries are installed using pip.
 - requests
 - python-dotenv
 
-Frontend:
-On a Linux machine:
-- sudo apt install npm
-
+**Frontend**: On a Linux machine,
+```
+sudo apt install npm
+```
 
 ### Initial Setup
-After ensuring the requirements above are installed. Run the following commands to install the dependencies required by npm to run the frontend.
+After ensuring the requirements above are installed, navigate to the frontend directory and run the following commands to install the dependencies required by npm to run the frontend.
 ```
 npm install
 npm install react-scripts
 ```
 
 ### Running the Application
-- **Note**: We are using cloud.mongodb to store information in our database such as bettingData, account info, transactions, etc. Because of that, we cannot connect via FSU networks.
-- We also ran this in VSCode
+- **Note**: We are using cloud.mongodb to store information in our database such as bets, transactions, and users. Because of that, we cannot connect via FSU networks.
 
 First start the backend of the application by running main.py located in the backend directory.
 ```
