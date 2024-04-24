@@ -39,7 +39,7 @@ table th {
 
 .review h2 {
   font-size: 24px;
-  background: #f4f4f4;
+  background: #000;
   padding: 10px;
   border: 1px solid #ddd;
 }
@@ -72,21 +72,37 @@ table th {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Pushes the button to the bottom */
+  border: 2px solid #000;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .placeBetButton {
+  background-color: #000;
+  color: #4a4a4a;
   align-self: center; /* Centers the button in the bet slip container */
   padding: 10px 20px;
   margin-top: 20px; /* Adds some space above the button */
   cursor: pointer;
 }
 .customNavbar {
-  background-color: #cf3e40 !important; /* Example: Blue color */
+  background-color: #000 !important; /* Example: Blue color */
 }
 
 .login-page-wrapper {
+  background-color: #4a4a4a;
+  color: #4a4a4a;
   display: flex;
   justify-content: center; /* Centers the form container horizontally */
   align-items: center; /* Centers the form container vertically */
   min-height: 100vh; /* Use the entire screen height */
+}
+
+.bet-container {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #1c1c1c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

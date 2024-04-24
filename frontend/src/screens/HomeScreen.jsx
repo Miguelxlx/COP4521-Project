@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setCredentials } from '../slices/authSlice';
+import '../assets/styles/index.css';
 
 function App() {
   const [odds, setOdds] = useState([]);
@@ -120,7 +121,7 @@ function App() {
           <div>Loading odds...</div>
         ) : (
           odds.map((odd, index) => (
-            <div key={index} style={{ marginBottom: '20px' }}>
+            <div key={index} className="bet-container">
               <h3>{odd.home_team} <img src={odd.home_img}></img>({odd.h2h_home_price}) vs. {odd.visitor_team} ({odd.h2h_visitor_price}) <img src={odd.visitor_img}></img> </h3>
               <h4>Over: {odd.over_price} Under: {odd.under_price}</h4>
               <h5>Line: {odd.line}</h5>
@@ -172,7 +173,7 @@ function App() {
         <h2>Bet Slip</h2>
         {message && <div className="alert alert-danger">{message}</div>}
         {betSlip.map((bet, index) => (
-          <div key={index} style={{ marginBottom: '10px' }}>
+          <div key={index} className ="betSlipContainer">
             <p>{bet.home_team} vs. {bet.visitor_team}</p>
             <p>Bet Amount: ${bet.amount}</p>
             <button onClick={() => handleRemoveBet(index)}>Remove Bet</button>

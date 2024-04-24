@@ -201,11 +201,12 @@ body {
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
   line-height: var(--bs-body-line-height);
-  color: var(--bs-body-color);
+  color: #ffffff;
   text-align: var(--bs-body-text-align);
   background-color: var(--bs-body-bg);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background-color: #4a4a4a;
 }
 
 hr {
@@ -12126,6 +12127,7 @@ fieldset:disabled .btn {
 .gamesContainer {
   flex: 3; /* Takes the majority of the space */
   padding: 20px;
+  background-color: #f7f7f7;
 }
 
 .betSlipContainer {
@@ -12134,7 +12136,11 @@ fieldset:disabled .btn {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Pushes the button to the bottom */
+  border: 2px solid #000;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
 
 .placeBetButton {
   align-self: center; /* Centers the button in the bet slip container */
@@ -12156,7 +12162,7 @@ fieldset:disabled .btn {
 .table {
   width: 100%;
   margin-bottom: 1rem;
-  color: #212529;
+  color: #fff;
 }
 
 .table th,
@@ -12227,3 +12233,58 @@ fieldset:disabled .btn {
   padding-left: 0;
 }
 
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #000; /* Darker text color for better contrast */
+  background-color: #f8f9fa; /* Light background color */
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+  background-color: #e9ecef; /* Slightly darker background for the header */
+  color: #000;
+}
+
+.table tbody tr {
+  transition: background-color 0.3s ease-in-out;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f1f3f5; /* Slightly darker shade for odd rows */
+}
+
+.table-hover tbody tr:hover {
+  background-color: #e2e6ea; /* Darker shade on hover */
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.thead-dark {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.container {
+  padding: 2rem;
+}
