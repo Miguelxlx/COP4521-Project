@@ -134,7 +134,7 @@ const ProfileScreen = () => {
                 </Col>
             </Row>
             <Col>
-                Premium User info goes here:
+                Profit History:
                 {userInfo.role === 'premium' && (
                     <LineChart
                     width={500}
