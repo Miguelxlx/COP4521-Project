@@ -23,8 +23,8 @@ def convert_objectid(obj):
 @app.route("/odds", methods=["GET"])
 def get_odds():
     # Retrieves a list of dictionaries containing odds information
-    # odds, remaing_requests = api_odds()
-    odds = get_odd_sample()
+    odds, remaing_requests = api_odds()
+    #odds = get_odd_sample()
     odds_and_logos = []
     for odd in odds:
         odd['home_img'] = logos[odd['home_team']]

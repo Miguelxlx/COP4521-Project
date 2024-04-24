@@ -72,6 +72,7 @@ const BetsScreen = () => {
             <th>Line</th>
             <th>Amount Placed</th>
             <th>Status</th>
+            <th>Profit</th>
           </tr>
         </thead>
         <tbody>
@@ -81,9 +82,10 @@ const BetsScreen = () => {
               <td>{bet.visitorTeam}</td>
               <td>{new Date(bet.gameTime).toLocaleString()}</td>
               <td>{bet.wager}</td>
-              <td>{bet.line.$numberDouble}</td>
+              <td>{bet.line}</td>
               <td>${bet.amountPlaced}</td>
               <td>{bet.status}</td>
+              <td>${bet.profit}</td>
             </tr>
           ))}
         </tbody>

@@ -124,6 +124,7 @@ function App() {
               <h3>{odd.home_team} <img src={odd.home_img}></img>({odd.h2h_home_price}) vs. {odd.visitor_team} ({odd.h2h_visitor_price}) <img src={odd.visitor_img}></img> </h3>
               <h4>Over: {odd.over_price} Under: {odd.under_price}</h4>
               <h5>Line: {odd.line}</h5>
+              <h6>Game Time: {odd.time}</h6>
               <select
                 value={betDetails[index]?.type || ''}
                 onChange={(e) => handleBetDetailChange(index, 'type', e.target.value)}
