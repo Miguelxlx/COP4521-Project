@@ -3,9 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Card, Alert, Button, Form } from 'react-bootstrap';
 import { setCredentials } from '../slices/authSlice';
 import { LinkContainer } from 'react-router-bootstrap';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const ProfileScreen = () => {
     const userInfo = useSelector(state => state.auth.userInfo);
+    const cumulativeResults = useSelector(state => state.auth.cumulativeResults);
     const dispatch = useDispatch();  // Use dispatch if you're updating the redux store
 
     const [profile, setProfile] = useState({});
@@ -134,9 +136,19 @@ const ProfileScreen = () => {
             <Col>
                 Premium User info goes here:
                 {userInfo.role === 'premium' && (
-                    <Container>
-                        Win-Loss History will go here:
-                    </Container>
+                    <LineChart
+                    width={500}
+                    height={300}
+                    data={cumulativeResults}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="gameTime" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="total" stroke="#8884d8" activeDot={{ r: 8 }} />
+                </LineChart>
                 )}
             </Col>
             

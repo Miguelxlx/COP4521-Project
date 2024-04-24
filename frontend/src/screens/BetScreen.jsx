@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCumulativeResults } from '../slices/authSlice';
 
 const BetsScreen = () => {
   const [bets, setBets] = useState([]);
   const userInfo = useSelector(state => state.auth.userInfo);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchBets = async () => {
@@ -11,6 +13,7 @@ const BetsScreen = () => {
       const data = await response.json();
       if (response.ok) {
         setBets(data.bets);
+        calculateCumulativeResults(data.bets);
       } else {
         console.error('Failed to fetch bets');
       }
@@ -22,6 +25,39 @@ const BetsScreen = () => {
       console.error('User info is missing');
     }
   }, [userInfo]);
+
+  const calculateCumulativeResults = (bets) => {
+    let results = [];
+    let total = 0;
+
+    bets.forEach(bet => {
+        console.log('Bet data:', bet);
+
+        const amountPlaced = parseFloat(bet.amountPlaced);
+        const profit = parseFloat(bet.profit);
+
+        if (bet.status === 'W') {
+            total += profit;
+        } else if (bet.status === 'L') {
+            total -= amountPlaced;
+        }
+
+        const formattedGameTime = new Date(bet.gameTime).toLocaleDateString('en-US');
+        const existingResult = results.find(r => r.gameTime === formattedGameTime);
+
+        if (existingResult) {
+            existingResult.total = total;
+        } else {
+            results.push({
+                gameTime: formattedGameTime,
+                total: total
+            });
+        }
+    });
+
+    console.log('Cumulative results:', results); // Log to verify the results
+    dispatch(setCumulativeResults(results));
+};
 
   return (
     <div className="table-responsive">
