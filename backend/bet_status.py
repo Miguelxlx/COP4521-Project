@@ -3,24 +3,24 @@ from bson import ObjectId
 from config import db
 import time
 
-bet_collection = db['bets']
-transaction_collection = db['transactions']
-user_collection = db['users']
+bets = db['bets']
+transactions = db['transactions']
+users = db['users']
 
-user_id = None
-
-def get_all_pending_bets():
-    print("All pending")
-    print(transaction_collection)
+def get_all_pending_bets(user_id):
     try:
         # Query the bets collection for documents with matching user_id
-        transaction_cursor = transaction_collection.find({'user_id': user_id})
+        transaction_cursor = transactions.find({'user_id': user_id})
 
         pending_bets = []
+
+        # Must go through transactions first since the bets do not carry userId
         for transaction in transaction_cursor:
             bet_ids = transaction['betIds']
             for bet in bet_ids:
-                bet_cursor = bet_collection.find_one({'_id': bet})
+                bet_cursor = bets.find_one({'_id': bet})
+
+                # Add bet to list if status is Pending
                 if bet_cursor and bet_cursor['status'] == 'Pending':
                     pending_bets.append(bet_cursor)
 
@@ -30,63 +30,67 @@ def get_all_pending_bets():
     return pending_bets
 
 def check_bet_status(bet):
+    # Truncate to only have the date
     date = bet['gameTime'][:10]
-    games = get_results(date)
 
+    # Retrieves all the games from that date
+    games = get_results(date)
 
     for game in games:
         if game['home_team'] == bet['homeTeam'] and game['visitor_team'] == bet['visitorTeam']:
+            # Game has not finished yet
             if game['visitor_points'] is None:
                 return 0, 0
             else:
+                # Compares outcome of the game with wager placed
                 status = get_bet_result(bet['wager'], game['home_points'],game['visitor_points'],bet['line'])
 
                 if status == 1:
+                    # Calculates profit made based bet slip odds
                     profit = (float(bet['amountPlaced']) * float(bet['odds']))
-                    print('Profit: ',profit)
                     return 1, profit
                 elif status == -1:
                     profit = - float(bet['amountPlaced'])
                     return -1 , 0 
                 
-    print("Did not find game")
+
+    # Did not find game
     return 0, 0
 
 def get_bet_result(bet_type,home_points,visitor_points,line):
     home_points = int(home_points)
     visitor_points = int(visitor_points)
+
     if (bet_type == "Over" and home_points + visitor_points > line)                                    or (bet_type == "Under" and home_points + visitor_points < line)                                   or (bet_type == "home_win" and home_points > visitor_points)                                         or(bet_type == "visitor_win" and home_points < visitor_points): 
         return 1
     else:
         return -1
 
-def update_pending_bets(id):
-    user_id = id
-    pending_bets = get_all_pending_bets()
+def update_pending_bets(user_id):
+    # List of all bets whose outcome is still pending
+    pending_bets = get_all_pending_bets(user_id)
 
     for pending_bet in pending_bets:
+        # Check status of the bet
         status, profit = check_bet_status(pending_bet)
 
+        # Won bet
         if status == 1:
-            print("Won bet")
+            # Update bet status in db
+            bets.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'W'}})
+            bets.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
 
-            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'W'}})
-            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
-
-            user = user_collection.find_one({'_id':user_id})
+            # Update user balance
+            user = users.find_one({'_id':user_id})
             new_balance = int(user['balance']) + profit 
-            user_collection.update_one({"_id": user_id}, {"$set": {"balance": new_balance}})
+            users.update_one({"_id": user_id}, {"$set": {"balance": new_balance}})
+        # Lost bet
         elif status == -1:
-            print("Lost bet")
-            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'L'}})
-            bet_collection.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
-            pass
-        else:
-            print("Bet still pending")
+            # Update bet status in db
+            bets.update_one({"_id": pending_bet['_id']}, {"$set": {"status": 'L'}})
+            bets.update_one({"_id": pending_bet['_id']}, {"$set": {"profit": profit}})
 
+        # To avoid errors from api
         time.sleep(5)
 
-if __name__ == "__main__":
-    user_id = ObjectId('661ecb2a3587f557bb71755f')
-    update_pending_bets(user_id)
 

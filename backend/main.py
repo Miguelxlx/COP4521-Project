@@ -1,13 +1,11 @@
+from config import app, db, logos
+from bet_status import update_pending_bets
+from odds import api_odds
 from flask import request, jsonify
+from bson import ObjectId
 import bcrypt
 import datetime
-from config import app
-from odds import api_odds
-from odds_sample import get_odd_sample
-from bson import ObjectId
-from bet_status import update_pending_bets
-from config import app, db, logos
-from flask import session
+
 
 def convert_objectid(obj):
     """Recursively convert ObjectId to string in nested documents."""
@@ -22,9 +20,10 @@ def convert_objectid(obj):
 
 @app.route("/odds", methods=["GET"])
 def get_odds():
-    # Retrieves a list of dictionaries containing odds information
+    # Retrieves list of dicts from odds script
     odds, remaing_requests = api_odds()
-    #odds = get_odd_sample()
+
+    # Add logos to dicts
     odds_and_logos = []
     for odd in odds:
         odd['home_img'] = logos[odd['home_team']]
@@ -42,7 +41,7 @@ def register():
     email = data.get('email')
     password = data.get('password')
 
-    # Query MongoDB to check if user exists with given email and password
+    # Query MongoDB to check if email already taken
     user = db['users'].find_one({'email': email})
 
     if user:
@@ -51,23 +50,22 @@ def register():
     # Create hashed password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     
-    # Create user entry en insert into db
+    # Create user entry and insert into db
     user = {
         "name": name,
         "email": email,
         "password": hashed_password.decode('utf-8'),
-        "role": "user",  # Use "user" for regular users, "admin" for administrators
+        "role": "user",
         "balance": 1000.0
     }
 
     db.users.insert_one(user)
+
     return jsonify({'valid': True, 'message': 'Registration valid!'})  
 
 @app.route('/profile', methods=['GET']) 
 def get_profile():
-
     data = request.get_json()
-    name = data.get('name')
     email = data.get('email')
 
     # Fetch user details from the database
@@ -91,7 +89,7 @@ def check_login():
 
     # Checks if user exists and if password matches
     if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
-        # User info passed back to the frontend
+        # User info passed back to the frontend to be saved in the Redux
         user = {
             'id': str(user['_id']), 
             'username': user['name'],
@@ -99,15 +97,10 @@ def check_login():
             'balance' : user['balance'],
             'role' : user['role']
         }
-
-        print(user)
-
-        print('successful login',user)
         return jsonify({"message": "Login successful", "user":user}), 200
     else:
-        # Failed login
         return jsonify({"message": "Invalid email or password"}), 403
-    
+
 @app.route('/bets', methods=['GET'])
 def get_bets():
     user_id = request.args.get('user_id') 
@@ -120,31 +113,29 @@ def get_bets():
     for transaction in transactions:
         bet_ids.extend(transaction['betIds'])
 
+    # Gets each bet from with their betId and converts ObjectIds to string
     bets = [convert_objectid(db.bets.find_one({"_id": id})) for id in bet_ids]
 
     return jsonify({"bets": bets})
 
-
-# @app.route('/transactions', methods=['GET'])
-# def get_transactions():
-#     user_id = request.args.get('user_id')  # The user ID should be passed as a query parameter
-#     transactions = db.transactions.find({"userid": user_id})
-#     transaction_list = [trans for trans in transactions]  # Convert cursor to list
-#     return jsonify({"transactions": transaction_list})
-
 @app.route('/transactions', methods=['GET'])
 def get_transactions():
-    user_id = request.args.get('user_id')  # Expect user ID as a query parameter
+    # Get userId from frontend
+    user_id = request.args.get('user_id')
+
+    # Get all transactions with userId
     transactions = db.transactions.find({"userId": ObjectId(user_id)})
+
+    # Convert all objectIds to strings to avoid json error
     transaction_list = [convert_objectid(transaction) for transaction in transactions]
 
     return jsonify({"transactions": transaction_list})
-
 
 @app.route('/submit_transaction', methods=['POST'])
 def submit_transaction():
     data = request.get_json()
 
+    # Form information
     user_id =  ObjectId(data['id'])
     transaction_amount = data['total']
     bet_slip = data['betSlip']
@@ -154,14 +145,14 @@ def submit_transaction():
     user = db.users.find_one({"_id": user_id})
     user_balance = user['balance']
 
+    # Only place transaction if user has enough balance
     if user and user_balance >= transaction_amount:
         bet_ids = []
 
-        # Insert all the bets into collection and retrieve their ids
+        # Insert all bets in transaction into bets collection
         for bet in bet_slip:
-            print(bet)
             wager = bet['team']
-            odds = 0
+            odds = None
 
             if wager == 'Over':
                 odds = bet['over_price']
@@ -185,9 +176,11 @@ def submit_transaction():
             }
 
             entry = db.bets.insert_one(bet_entry)
+
+            # Save the betId returned from the db
             bet_ids.append(entry.inserted_id)
         
-        # Insert transaction into collection and add list of betIds
+        # Insert transaction info and list of betIds into collection
         transaction = {
             "userId" : user_id,
             "transactionTime" : time_placed,
@@ -215,8 +208,9 @@ def submit_transaction():
 
 @app.route('/check_pending_bets', methods=['POST'])
 def checkPendingBets():
-    print("CheckPedning")
     data = request.get_json()
+
+    # update pending bets if games have finished
     update_pending_bets(ObjectId(data['id']))
 
     return jsonify({"message": "Update Successful"}), 200
@@ -295,7 +289,6 @@ def delete_user():
             return jsonify({"message": "No user found with provided ID"}), 404
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)

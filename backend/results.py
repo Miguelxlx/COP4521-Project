@@ -9,20 +9,24 @@ headers= {
     }
 
 
+# We are actually not fetching from this function for the running website since there are some mismatches in the team names that we edited directly in the json logos file
 def get_logos():
     querystring = {"season":"2022"}
     response = requests.get(url, headers=headers, params=querystring)
     nba_json = response.json()
 
     team_logos = {}
+
+    # Retrieve logos for every team
     for team in nba_json['response']:
         team_name = team['teams']['home']['name']
+        if team_name == 'LA Clippers':
+            team_name = 'Los Angeles Clippers'
+
         logo = team['teams']['home']['logo']
         team_logos[team_name] = logo
 
-
-    with open("logos/logos.json", 'w') as json_file:
-        json.dump(team_logos, json_file)
+    return team_logos
 
 # date has to be in the format 'YYYY-MM-DD'
 def get_results(date):
@@ -32,6 +36,7 @@ def get_results(date):
 
     results = []
 
+    # Store all games from that date
     for game in nba_json['response']:
         visitor_name = game['teams']['visitors']['name']
         visitor_points = game['scores']['visitors']['points']
@@ -44,9 +49,3 @@ def get_results(date):
         results.append(result)
 
     return results
-
-if __name__ == "__main__":
-    # results = get_results('2024-04-04')
-    # print(results)
-
-    get_logos()
