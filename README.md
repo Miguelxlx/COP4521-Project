@@ -74,7 +74,7 @@ Admin users are able to view a list of all users by clicking on "User List" from
 - **Miguel Montesinos**
 - **Jared Braswell**
     - Created the basic structure of the project using React and NodeJs
-    - Created the Screens Slices and Components in the frontend
+    - Created the Screens, Slices, and Components in the frontend
     - Handled the various routing and path setups
     - Initial implementation of connecting the backend and frontend
 - **Drake Phousirith**
