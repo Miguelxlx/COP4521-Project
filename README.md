@@ -73,6 +73,10 @@ Admin users are able to view a list of all users by clicking on "User List" from
     - Route functions for the frontend 
 - **Miguel Montesinos**
 - **Jared Braswell**
+    - Created the basic structure of the project using React and NodeJs
+    - Created the Screens Slices and Components in the frontend
+    - Handled the various routing and path setups
+    - Initial implementation of connecting the backend and frontend
 - **Drake Phousirith**
     - Implemented update_balance in backend and connected it to profile screen
     - Implemented upgrade_premium in backend and connected it to profile screen
