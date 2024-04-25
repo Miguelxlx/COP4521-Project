@@ -62,11 +62,9 @@ In the profile screen, users can add to their balance by typing in the amount th
 
 Premium users will be able to see their profit overtime in the profile screen after upgrading.
 
-Admin users
+Admin users are able to view a list of all users by clicking on "User List" from the dropdown menu in the top right of the web page. From there they can choose and delete any user they wish after confirmation.
 
-## Bugs
-- **Document known bugs here if there are any**
-
+**ADMIN CREDENTIALS**
 
 ## Separation of Work
 
@@ -76,4 +74,7 @@ Admin users
 - **Miguel Montesinos**
 - **Jared Braswell**
 - **Drake Phousirith**
-
+    - Implemented update_balance in backend and connected it to profile screen
+    - Implemented upgrade_premium in backend and connected it to profile screen
+    - Helped fix frontend on admin's user list screen, and implemented both get_users and delete_user functions
+    - Contributed to writing Distribution Plan
