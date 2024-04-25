@@ -65,6 +65,8 @@ Premium users will be able to see their profit overtime in the profile screen af
 Admin users are able to view a list of all users by clicking on "User List" from the dropdown menu in the top right of the web page. From there they can choose and delete any user they wish after confirmation.
 
 **ADMIN CREDENTIALS**
+- Email Address: admin@admin
+- Password: admin
 
 ## Separation of Work
 
