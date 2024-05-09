@@ -65,13 +65,21 @@ Premium users will be able to see their profit overtime in the profile screen af
 Admin users are able to view a list of all users by clicking on "User List" from the dropdown menu in the top right of the web page. From there they can choose and delete any user they wish after confirmation.
 
 **ADMIN CREDENTIALS**
+- Email Address: admin@admin
+- Password: admin
 
 ## Separation of Work
 
 - **Osher Steel**
-    - API logic for the odds and nba apis
-    - Route functions for the frontend 
+    - Created the python files that fetch the data from the apis
+    - Created backend functions to handle transactions and update bet status
+    - Helped design the db collections
+    - Helped with some aspect of the frontend that dealt with fetching information from the routes
 - **Miguel Montesinos**
+    - Designed the MongoDB database
+    - Worked on login and register functions
+    - Contributed to the design of the frontend
+    - Created the tables for the bets and transaction on the frontend
 - **Jared Braswell**
     - Created the basic structure of the project using React and NodeJs
     - Created the Screens, Slices, and Components in the frontend
