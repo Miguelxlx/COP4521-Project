@@ -7,7 +7,7 @@ import json
 import os
 
 # MongoDB uri
-uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
+uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@bettingapp.oubuvfy.mongodb.net/?retryWrites=true&w=majority&appName=BettingApp"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))

@@ -6,7 +6,8 @@ from pymongo.server_api import ServerApi
 from bson import ObjectId
 
 def setup():
-    uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@cop4521.ubpj23p.mongodb.net/?retryWrites=true&w=majority&appName=COP4521"
+    
+    uri = "mongodb+srv://miguelxlx123:xAVZHEXrJhFN4XBa@bettingapp.oubuvfy.mongodb.net/?retryWrites=true&w=majority&appName=BettingApp"
     client = MongoClient(uri, server_api=ServerApi('1'))
     db = client['bettingData']
     print('Connected to MongoDB Atlas successfully')
